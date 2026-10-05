@@ -1,0 +1,51 @@
+﻿@model MyStore.Models.EDM.Product
+
+@{
+    ViewBag.Title = Model.ProductName;
+}
+
+<div class="container" style="margin-top: 30px;">
+    <p>
+        @Html.ActionLink("← Quay lại trang chủ", "Index", "Home", null, new { @class = "btn btn-secondary btn-sm" })
+    </p>
+
+    <div class="row" style="background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+        <!-- Cột hiển thị hình ảnh sản phẩm lớn -->
+        <div class="col-md-5 text-center">
+            @if (!string.IsNullOrEmpty(Model.ProductImage))
+            {
+                <img src="@Url.Content(Model.ProductImage)" style="max-width: 100%; max-height: 400px; object-fit: cover; border-radius: 6px; border: 1px solid #eee;" />
+            }
+            else
+            {
+                <div style="height: 300px; display: flex; align-items: center; justify-content: center; background: #f8f9fa; color: #6c757d; border-radius: 6px;">
+                    Không có hình ảnh
+                </div>
+            }
+        </div>
+
+        <!-- Cột hiển thị thông tin chi tiết -->
+        <div class="col-md-7">
+            <h2 style="font-weight: bold; margin-bottom: 20px;">@Model.ProductName</h2>
+
+            <h3 style="color: #e74c3c; font-weight: bold; margin-bottom: 20px;">
+                @string.Format("{0:N0} VNĐ", Model.ProductPrice)
+            </h3>
+
+            <hr />
+
+            <div style="margin-bottom: 30px;">
+                <h5 style="font-weight: bold; margin-bottom: 10px;">Mô tả sản phẩm:</h5>
+                <p style="line-height: 1.6; color: #555;">
+                    @(string.IsNullOrEmpty(Model.ProductDescription) ? "Chưa có mô tả chi tiết cho sản phẩm này." : Model.ProductDescription)
+                </p>
+            </div>
+
+            <!-- Các nút thao tác mua hàng -->
+            <div>
+                <button class="btn btn-success btn-lg" style="margin-right: 10px;">Thêm vào giỏ hàng</button>
+                @Html.ActionLink("Tiếp tục mua sắm", "Index", "Home", null, new { @class = "btn btn-outline-primary btn-lg" })
+            </div>
+        </div>
+    </div>
+</div>

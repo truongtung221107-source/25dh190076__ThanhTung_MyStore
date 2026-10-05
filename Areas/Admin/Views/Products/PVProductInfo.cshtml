@@ -1,0 +1,38 @@
+﻿@model MyStore.Models.EDM.Product
+
+<style>
+    img {
+        height: 250px;
+        max-width: 250px;
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="div-horizontal bg-info" style="padding: 15px; border-radius: 5px; display: flex;">
+        <div class="col-md-3">
+            @if (!string.IsNullOrEmpty(Model.ProductImage))
+            {
+                <img src="@Url.Content(Model.ProductImage)" />
+            }
+            else
+            {
+                <div class="text-danger" style="padding: 20px; border: 1px dashed red;">Sản phẩm này chưa có ảnh</div>
+            }
+        </div>
+        <div class="col-md-9">
+            <dl class="dl-horizontal">
+                <dt>Tên sản phẩm</dt>
+                <dd>@Html.DisplayFor(model => model.ProductName)</dd>
+
+                <dt>Mô tả</dt>
+                <dd>@Html.DisplayFor(model => model.ProductDescription)</dd>
+
+                <dt>Đơn giá</dt>
+                <dd>@Html.DisplayFor(model => model.ProductPrice)</dd>
+
+                <dt>Danh mục</dt>
+                <dd>@Html.DisplayFor(model => model.Category.CategoryName)</dd>
+            </dl>
+        </div>
+    </div>
+</div>

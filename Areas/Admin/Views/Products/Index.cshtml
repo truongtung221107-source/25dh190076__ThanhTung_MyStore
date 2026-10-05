@@ -1,0 +1,39 @@
+﻿@model IEnumerable<MyStore.Models.EDM.Product>
+
+@{
+    ViewBag.Title = "Quản lý sản phẩm";
+    Layout = Layout = "~/Views/Shared/_Layout.cshtml"; // Hoặc layout admin của bạn
+}
+
+<h2>Quản lý sản phẩm</h2>
+
+<p>
+    @Html.ActionLink("Thêm mới sản phẩm", "Create", null, new { @class = "btn btn-primary" })
+</p>
+<table class="table table-bordered table-striped">
+    <tr>
+        <th>Tên sản phẩm</th>
+        <th>Giá</th>
+        <th>Hình ảnh</th>
+        <th>Thao tác</th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@Html.DisplayFor(modelItem => item.ProductName)</td>
+            <td>@string.Format("{0:N0} VNĐ", item.ProductPrice)</td>
+            <td>
+                @if (!string.IsNullOrEmpty(item.ProductImage))
+                {
+                    <img src="@Url.Content(item.ProductImage)" style="width: 60px; height: 60px; object-fit: cover;" />
+                }
+            </td>
+            <td>
+                @Html.ActionLink("Sửa", "Edit", new { id = item.ProductID }, new { @class = "btn btn-warning btn-sm" }) |
+                @Html.ActionLink("Chi tiết", "Details", new { id = item.ProductID }, new { @class = "btn btn-info btn-sm" }) |
+                @Html.ActionLink("Xóa", "Delete", new { id = item.ProductID }, new { @class = "btn btn-danger btn-sm" })
+            </td>
+        </tr>
+    }
+</table>
