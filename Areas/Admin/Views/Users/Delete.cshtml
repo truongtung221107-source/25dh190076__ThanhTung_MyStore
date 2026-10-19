@@ -1,0 +1,29 @@
+﻿@model MyStore.Models.EDM.User
+
+@{
+    ViewBag.Title = "Xóa tài khoản";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2 class="bg-success" style="padding: 10px; color: white;">XÓA TÀI KHOẢN</h2>
+<h4 class="alert alert-danger">Bạn có chắc chắn muốn xóa tài khoản này không?</h4>
+
+<div>
+    <dl class="dl-horizontal">
+        <dt>Tên đăng nhập:</dt>
+        <dd>@Html.DisplayFor(model => model.Username)</dd>
+
+        <dt>Vai trò (Role):</dt>
+        <dd>@Html.DisplayFor(model => model.UserRole)</dd>
+    </dl>
+
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="form-actions no-color" style="margin-top: 15px;">
+            <input type="submit" value="Xóa vĩnh viễn" class="btn btn-danger" /> |
+            @Html.ActionLink("Quay lại danh sách", "Index", null, new { @class = "btn btn-primary" })
+        </div>
+    }
+</div>

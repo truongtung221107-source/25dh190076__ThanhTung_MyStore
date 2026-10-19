@@ -10,6 +10,7 @@ using MyStore.Models.EDM;
 
 namespace MyStore.Areas.Admin.Controllers
 {
+    [AdminAuthorize]
     public class CategoriesController : Controller
     {
         private MyStoreEntities db = new MyStoreEntities();

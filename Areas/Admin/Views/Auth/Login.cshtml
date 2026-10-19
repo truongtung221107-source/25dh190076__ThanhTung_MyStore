@@ -1,0 +1,57 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Đăng nhập hệ thống Admin</title>
+    <!-- CSS làm đẹp form đăng nhập -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f4f6f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .login-box {
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            width: 400px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-box">
+        <h3 class="text-center text-primary font-weight-bold mb-4">ĐĂNG NHẬP ADMIN</h3>
+
+        <!-- Khu vực báo lỗi -->
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger text-center">@ViewBag.Error</div>
+        }
+
+        <!-- Form nhập liệu -->
+        @using (Html.BeginForm("Login", "Auth", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            <div class="form-group">
+                <label class="font-weight-bold">Tên đăng nhập</label>
+                <input type="text" name="username" class="form-control" placeholder="Nhập Username..." required />
+            </div>
+            <div class="form-group">
+                <label class="font-weight-bold">Mật khẩu</label>
+                <input type="password" name="password" class="form-control" placeholder="Nhập Password..." required />
+            </div>
+            <button type="submit" class="btn btn-primary btn-block font-weight-bold mt-4" style="padding: 10px;">Đăng nhập</button>
+        }
+    </div>
+</body>
+</html>

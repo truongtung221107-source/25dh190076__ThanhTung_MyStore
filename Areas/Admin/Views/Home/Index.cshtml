@@ -1,0 +1,45 @@
+﻿@{
+    ViewBag.Title = "Thống kê";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2 class="my-3">Thống kê tổng quan</h2>
+
+<div class="row text-center mb-4">
+    <div class="col-md-3 mb-2"><div class="card p-3"><h6>Sản phẩm</h6><h3>@ViewBag.TotalProducts</h3></div></div>
+    <div class="col-md-3 mb-2"><div class="card p-3"><h6>Khách hàng</h6><h3>@ViewBag.TotalCustomers</h3></div></div>
+    <div class="col-md-3 mb-2"><div class="card p-3"><h6>Đơn hàng</h6><h3>@ViewBag.TotalOrders</h3></div></div>
+    <div class="col-md-3 mb-2"><div class="card p-3"><h6>Doanh thu</h6><h3>@(((decimal)ViewBag.TotalRevenue).ToString("N0")) đ</h3></div></div>
+</div>
+
+<div class="row">
+    <div class="col-md-7"><div id="revenueChart" style="height:360px;"></div></div>
+    <div class="col-md-5"><div id="categoryChart" style="height:360px;"></div></div>
+</div>
+
+@section scripts {
+    <script src="https://www.gstatic.com/charts/loader.js"></script>
+    <script>
+        var revenueData = @Html.Raw(Json.Encode(ViewBag.RevenueData));
+        var categoryData = @Html.Raw(Json.Encode(ViewBag.CategoryData));
+
+        google.charts.load('current', { packages: ['corechart'] });
+        google.charts.setOnLoadCallback(drawCharts);
+
+        function drawCharts() {
+            var d1 = new google.visualization.DataTable();
+            d1.addColumn('string', 'Tháng');
+            d1.addColumn('number', 'Doanh thu');
+            d1.addRows(revenueData);
+            new google.visualization.ColumnChart(document.getElementById('revenueChart'))
+                .draw(d1, { title: 'Doanh thu theo tháng', legend: 'none' });
+
+            var d2 = new google.visualization.DataTable();
+            d2.addColumn('string', 'Danh mục');
+            d2.addColumn('number', 'Số sản phẩm');
+            d2.addRows(categoryData);
+            new google.visualization.PieChart(document.getElementById('categoryChart'))
+                .draw(d2, { title: 'Sản phẩm theo danh mục' });
+        }
+    </script>
+}

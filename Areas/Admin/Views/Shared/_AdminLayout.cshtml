@@ -1,46 +1,51 @@
-﻿<!DOCTYPE html>
-<html>
+﻿@{
+    // Key phải trùng với key gán trong action Login của AuthController
+    var adminInfo = Session["Admin"] as MyStore.Models.EDM.User;
+}
+<!DOCTYPE html>
+<html lang="vi">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title - Trang Quản Trị</title>
+    <title>@ViewBag.Title - Trang quản trị MyStore</title>
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
 </head>
 <body>
-    <!-- Thanh Menu Admin Header -->
-    <div class="navbar navbar-inverse navbar-fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                @Html.ActionLink("My Store", "Index", "Home", new { area = "Admin" }, new { @class = "navbar-brand" })
-            </div>
-            <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                    <li>@Html.ActionLink("Home", "Index", "Home")</li>
-                    <li>@Html.ActionLink("Danh mục", "Index", "Categories")</li>
-                    <li>@Html.ActionLink("Sản phẩm", "Index", "Products")</li>
-                    <li>@Html.ActionLink("Khách hàng", "Index", "Customers")</li>
-                    <li>@Html.ActionLink("Đơn hàng", "Index", "Orders")</li>
-                    <li>@Html.ActionLink("Tài khoản", "Index", "Account")</li>
+            @Html.ActionLink("MyStore Admin", "Index", "Home", new { area = "Admin" }, new { @class = "navbar-brand" })
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="adminNav">
+                <ul class="navbar-nav me-auto text-nowrap">
+                    <li class="nav-item">@Html.ActionLink("Trang chủ", "Index", "Home", new { area = "Admin" }, new { @class = "nav-link" })</li>
+                    <li class="nav-item">@Html.ActionLink("Danh mục", "Index", "Categories", new { area = "Admin" }, new { @class = "nav-link" })</li>
+                    <li class="nav-item">@Html.ActionLink("Sản phẩm", "Index", "Products", new { area = "Admin" }, new { @class = "nav-link" })</li>
+                    <li class="nav-item">@Html.ActionLink("Khách hàng", "Index", "Customers", new { area = "Admin" }, new { @class = "nav-link" })</li>
+                    <li class="nav-item">@Html.ActionLink("Tài khoản Admin", "Index", "Users", new { area = "Admin" }, new { @class = "nav-link" })</li>
+                </ul>
+                <ul class="navbar-nav">
+                    @if (adminInfo != null)
+                    {
+                        <li class="nav-item"><span class="navbar-text me-3 text-nowrap">Xin chào, @adminInfo.Username</span></li>
+                        <li class="nav-item">@Html.ActionLink("Đăng xuất", "Logout", "Auth", new { area = "Admin" }, new { @class = "nav-link" })</li>
+                    }
+                    else
+                    {
+                        <li class="nav-item">@Html.ActionLink("Đăng nhập", "Login", "Auth", new { area = "Admin" }, new { @class = "nav-link" })</li>
+                    }
                 </ul>
             </div>
         </div>
-    </div>
+    </nav>
 
-    <!-- Nội dung chính của trang Admin -->
-    <div class="container body-content" style="margin-top: 60px;">
+    <div class="container body-content mt-3">
         @RenderBody()
         <hr />
-        <!-- Footer theo mẫu thiết kế slide -->
         <footer>
-            <p>&copy; @DateTime.Now.Year - Tên ứng dụng</p>
-            <h4>Contact</h4>
-            <p>Tên các thành viên trong nhóm</p>
+            <p>&copy; @DateTime.Now.Year - MyStore - Trang quản trị</p>
         </footer>
     </div>
 

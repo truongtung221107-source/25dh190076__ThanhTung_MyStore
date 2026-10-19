@@ -1,0 +1,27 @@
+﻿@model MyStore.Models.ViewModel.UserSearchVM
+
+@{
+    ViewBag.Title = "Quản lý Tài khoản";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2 class="bg-success" style="padding: 10px; color: white;">DANH SÁCH TÀI KHOẢN</h2>
+
+@using (Html.BeginForm("Index", "Users", FormMethod.Get))
+{
+    <div class="form-group" style="display: flex; gap: 10px; margin-bottom: 20px;">
+        @Html.TextBoxFor(m => m.SearchTerm, new { @class = "form-control", placeholder = "Nhập tên đăng nhập hoặc vai trò..." })
+        <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+    </div>
+
+    <div class="form-group">
+        <strong>Sắp xếp theo: </strong>
+        @Html.ActionLink("Tên (A-Z)", "Index", new { sortOrder = "", searchTerm = Model.SearchTerm }) |
+        @Html.ActionLink("Tên (Z-A)", "Index", new { sortOrder = "name_desc", searchTerm = Model.SearchTerm }) |
+        @Html.ActionLink("Vai trò (A-Z)", "Index", new { sortOrder = "role_asc", searchTerm = Model.SearchTerm }) |
+        @Html.ActionLink("Vai trò (Z-A)", "Index", new { sortOrder = "role_desc", searchTerm = Model.SearchTerm })
+    </div>
+}
+
+<!-- Đây chính là dòng "chèn" Partial View hiển thị danh sách -->
+@Html.Partial("PVListUser", Model)

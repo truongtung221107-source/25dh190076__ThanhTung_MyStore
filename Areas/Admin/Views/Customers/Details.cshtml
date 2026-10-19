@@ -1,0 +1,98 @@
+﻿@model MyStore.Models.EDM.Customer
+
+@{
+    ViewBag.Title = "Chi tiết khách hàng";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2 class="bg-success" style="padding: 10px; border-radius: 4px;">CHI TIẾT KHÁCH HÀNG</h2>
+
+<table class="table table-bordered" style="max-width: 700px;">
+    <tr>
+        <th style="width: 180px;">Họ tên</th>
+        <td>@Model.CustomerName</td>
+    </tr>
+    <tr>
+        <th>Điện thoại</th>
+        <td>@Model.CustomerPhone</td>
+    </tr>
+    <tr>
+        <th>Email</th>
+        <td>@Model.CustomerEmail</td>
+    </tr>
+    <tr>
+        <th>Địa chỉ</th>
+        <td>@Model.CustomerAddress</td>
+    </tr>
+    <tr>
+        <th>Tài khoản</th>
+        <td>@Model.Username</td>
+    </tr>
+</table>
+
+<h4>Danh sách đơn hàng</h4>
+
+<table class="table table-bordered table-striped">
+    <tr>
+        <th>Mã đơn</th>
+        <th>Ngày đặt</th>
+        <th>Tổng tiền</th>
+        <th>Thanh toán</th>
+        <th>Địa chỉ giao hàng</th>
+    </tr>
+
+    @if (!Model.Orders.Any())
+    {
+        <tr>
+            <td colspan="5" class="text-center">Khách hàng này chưa có đơn hàng nào.</td>
+        </tr>
+    }
+
+    @foreach (var order in Model.Orders.OrderByDescending(o => o.OrderDate))
+    {
+        <tr>
+            <td>@order.OrderID</td>
+            <td>@order.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
+            <td>@string.Format("{0:N0} VNĐ", order.TotalAmount)</td>
+            <td>@order.PaymentStatus</td>
+            <td>@order.AddressDelivery</td>
+        </tr>
+    }
+</table>
+
+<p>
+    @Html.ActionLink("Quay lại danh sách", "Index", null, new { @class = "btn btn-primary" })
+</p>
+<h4 class="mt-4">Đơn hàng của khách hàng</h4>
+@if (Model.Orders == null || !Model.Orders.Any())
+{
+    <p>Khách hàng này chưa có đơn hàng nào.</p>
+}
+else
+{
+    <table class="table table-bordered">
+        <thead class="table-info">
+            <tr>
+                <th>Mã đơn</th>
+                <th>Ngày đặt</th>
+                <th>Tổng tiền</th>
+                <th>Thanh toán</th>
+                <th>Địa chỉ giao hàng</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var o in Model.Orders.OrderByDescending(x => x.OrderDate))
+            {
+                <tr>
+                    <td>@o.OrderID</td>
+                    <td>@o.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
+                    <td>@o.TotalAmount.ToString("N0") đ</td>
+                    <td>@o.PaymentStatus</td>
+                    <td>@o.AddressDelivery</td>
+                    <td>@Html.ActionLink("Xem chi tiết", "OrderDetails", "Customers", new { id = o.OrderID }, new { @class = "btn btn-primary btn-sm" })</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

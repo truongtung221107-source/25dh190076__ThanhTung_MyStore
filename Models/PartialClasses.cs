@@ -14,7 +14,7 @@ namespace MyStore.Models.EDM
     {
         // Thuộc tính tự thêm, dùng để upload ảnh sản phẩm, không tạo cột trong database
         [NotMapped]
-        public HttpPostedFileBase ImageFile { get; set; }
+        public HttpPostedFileBase ImageFile { get; set; }   
     }
 
     [MetadataType(typeof(UserMetadata))]

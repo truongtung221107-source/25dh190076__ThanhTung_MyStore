@@ -1,0 +1,94 @@
+﻿@using PagedList
+@using PagedList.Mvc
+@model IPagedList<MyStore.Models.EDM.Customer>
+
+@{
+    ViewBag.Title = "Quản lý khách hàng";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    string sort = ViewBag.SortOrder as string ?? "";
+}
+
+<style>
+    .pagination {
+        display: flex;
+        list-style: none;
+        padding-left: 0;
+        gap: 4px;
+    }
+
+        .pagination li a, .pagination li span {
+            display: block;
+            padding: 6px 12px;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            text-decoration: none;
+            color: #0d6efd;
+        }
+
+        .pagination li.active a, .pagination li.active span {
+            background: #0d6efd;
+            color: #fff;
+        }
+
+        .pagination li.disabled a, .pagination li.disabled span {
+            color: #6c757d;
+            pointer-events: none;
+        }
+</style>
+
+<h2>Quản lý khách hàng</h2>
+
+@using (Html.BeginForm("Index", "Customers", FormMethod.Get))
+{
+    <div class="row g-2 mb-3">
+        <div class="col-md-5">
+            <input type="text" name="searchString" value="@ViewBag.SearchString" class="form-control" placeholder="Tìm theo tên, điện thoại, email hoặc tên đăng nhập..." />
+        </div>
+        <div class="col-md-3">
+            <select name="sortOrder" class="form-select">
+                <option value="" @(sort == "" ? "selected" : "")>Mặc định</option>
+                <option value="name_asc" @(sort == "name_asc" ? "selected" : "")>Tên A → Z</option>
+                <option value="name_desc" @(sort == "name_desc" ? "selected" : "")>Tên Z → A</option>
+            </select>
+        </div>
+        <div class="col-md-4">
+            <button type="submit" class="btn btn-primary">Tìm</button>
+            @Html.ActionLink("Xóa lọc", "Index", null, new { @class = "btn btn-secondary" })
+        </div>
+    </div>
+}
+
+<table class="table table-bordered table-striped">
+    <tr>
+        <th>Họ tên</th>
+        <th>Điện thoại</th>
+        <th>Email</th>
+        <th>Địa chỉ</th>
+        <th>Tài khoản</th>
+        <th>Thao tác</th>
+    </tr>
+
+    @if (!Model.Any())
+    {
+        <tr>
+            <td colspan="6" class="text-center">Không tìm thấy khách hàng nào.</td>
+        </tr>
+    }
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.CustomerName</td>
+            <td>@item.CustomerPhone</td>
+            <td>@item.CustomerEmail</td>
+            <td>@item.CustomerAddress</td>
+            <td>@item.Username</td>
+            <td>@Html.ActionLink("Chi tiết", "Details", new { id = item.CustomerID }, new { @class = "btn btn-info btn-sm" })</td>
+        </tr>
+    }
+</table>
+
+<div>
+    Trang @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) / @Model.PageCount
+</div>
+@Html.PagedListPager(Model, page => Url.Action("Index", new { page, searchString = ViewBag.SearchString, sortOrder = ViewBag.SortOrder }))

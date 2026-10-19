@@ -1,15 +1,75 @@
-﻿@model IEnumerable<MyStore.Models.EDM.Product>
+﻿@using PagedList
+@using PagedList.Mvc
+@model IPagedList<MyStore.Models.EDM.Product>
 
 @{
     ViewBag.Title = "Quản lý sản phẩm";
-    Layout = Layout = "~/Views/Shared/_Layout.cshtml"; // Hoặc layout admin của bạn
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    string sort = ViewBag.SortOrder as string ?? "";
 }
+
+<style>
+    .pagination {
+        display: flex;
+        list-style: none;
+        padding-left: 0;
+        gap: 4px;
+    }
+
+        .pagination li a, .pagination li span {
+            display: block;
+            padding: 6px 12px;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            text-decoration: none;
+            color: #0d6efd;
+        }
+
+        .pagination li.active a, .pagination li.active span {
+            background: #0d6efd;
+            color: #fff;
+        }
+
+        .pagination li.disabled a, .pagination li.disabled span {
+            color: #6c757d;
+            pointer-events: none;
+        }
+</style>
 
 <h2>Quản lý sản phẩm</h2>
 
 <p>
     @Html.ActionLink("Thêm mới sản phẩm", "Create", null, new { @class = "btn btn-primary" })
 </p>
+
+@using (Html.BeginForm("Index", "Products", FormMethod.Get))
+{
+    <div class="row g-2 mb-3">
+        <div class="col-md-4">
+            <input type="text" name="searchString" value="@ViewBag.SearchString" class="form-control" placeholder="Tìm theo tên, mô tả hoặc danh mục..." />
+        </div>
+        <div class="col-md-2">
+            <input type="number" name="minPrice" value="@ViewBag.MinPrice" class="form-control" placeholder="Giá từ" />
+        </div>
+        <div class="col-md-2">
+            <input type="number" name="maxPrice" value="@ViewBag.MaxPrice" class="form-control" placeholder="Giá đến" />
+        </div>
+        <div class="col-md-2">
+            <select name="sortOrder" class="form-select">
+                <option value="" @(sort == "" ? "selected" : "")>Mới nhất</option>
+                <option value="name_asc" @(sort == "name_asc" ? "selected" : "")>Tên A → Z</option>
+                <option value="name_desc" @(sort == "name_desc" ? "selected" : "")>Tên Z → A</option>
+                <option value="price_asc" @(sort == "price_asc" ? "selected" : "")>Giá tăng dần</option>
+                <option value="price_desc" @(sort == "price_desc" ? "selected" : "")>Giá giảm dần</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary">Tìm</button>
+            @Html.ActionLink("Xóa lọc", "Index", null, new { @class = "btn btn-secondary" })
+        </div>
+    </div>
+}
+
 <table class="table table-bordered table-striped">
     <tr>
         <th>Tên sản phẩm</th>
@@ -17,6 +77,13 @@
         <th>Hình ảnh</th>
         <th>Thao tác</th>
     </tr>
+
+    @if (!Model.Any())
+    {
+        <tr>
+            <td colspan="4" class="text-center">Không tìm thấy sản phẩm nào.</td>
+        </tr>
+    }
 
     @foreach (var item in Model)
     {
@@ -37,3 +104,8 @@
         </tr>
     }
 </table>
+
+<div>
+    Trang @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) / @Model.PageCount
+</div>
+@Html.PagedListPager(Model, page => Url.Action("Index", new { page, searchString = ViewBag.SearchString, minPrice = ViewBag.MinPrice, maxPrice = ViewBag.MaxPrice, sortOrder = ViewBag.SortOrder }))

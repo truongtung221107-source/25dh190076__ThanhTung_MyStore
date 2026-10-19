@@ -12,29 +12,62 @@ using PagedList;
 
 namespace MyStore.Areas.Admin.Controllers
 {
+    [AdminAuthorize]
     public class ProductsController : Controller
     {
         private MyStoreEntities db = new MyStoreEntities();
 
         // GET: Admin/Products
-        public ActionResult Index(string searchString, int? page)
+        public ActionResult Index(string searchString, decimal? minPrice, decimal? maxPrice, string sortOrder, int? page)
         {
             int pageSize = 5;
             int pageNum = (page ?? 1);
 
             var products = db.Products.Include(p => p.Category);
 
-            // Xử lý tìm kiếm
+            // Tìm theo tên, mô tả hoặc danh mục
             if (!String.IsNullOrEmpty(searchString))
             {
-                products = products.Where(p => p.ProductName.Contains(searchString));
+                products = products.Where(p => p.ProductName.Contains(searchString)
+                                            || p.ProductDescription.Contains(searchString)
+                                            || p.Category.CategoryName.Contains(searchString));
             }
 
-            // Sắp xếp mặc định theo ID mới nhất
-            products = products.OrderByDescending(p => p.ProductID);
+            // Lọc theo khoảng giá
+            if (minPrice.HasValue)
+            {
+                products = products.Where(p => p.ProductPrice >= minPrice.Value);
+            }
+            if (maxPrice.HasValue)
+            {
+                products = products.Where(p => p.ProductPrice <= maxPrice.Value);
+            }
 
-            // Lưu từ khóa để giữ trạng thái khi chuyển trang
+            // Sắp xếp
+            switch (sortOrder)
+            {
+                case "name_asc":
+                    products = products.OrderBy(p => p.ProductName);
+                    break;
+                case "name_desc":
+                    products = products.OrderByDescending(p => p.ProductName);
+                    break;
+                case "price_asc":
+                    products = products.OrderBy(p => p.ProductPrice);
+                    break;
+                case "price_desc":
+                    products = products.OrderByDescending(p => p.ProductPrice);
+                    break;
+                default:
+                    products = products.OrderByDescending(p => p.ProductID);
+                    break;
+            }
+
+            // Giữ lại tiêu chí để hiện lại trên form và khi chuyển trang
             ViewBag.SearchString = searchString;
+            ViewBag.MinPrice = minPrice;
+            ViewBag.MaxPrice = maxPrice;
+            ViewBag.SortOrder = sortOrder;
 
             return View(products.ToPagedList(pageNum, pageSize));
         }
