@@ -1,0 +1,26 @@
+﻿@using PagedList.Mvc
+@model MyStore.Models.ViewModel.ProductDetailVM
+
+@if (Model.TopProducts != null && Model.TopProducts.Any())
+{
+    <section class="topProd">
+        <h2>Top Deals</h2>
+        <div class="top-container">
+            @foreach (var product in Model.TopProducts)
+            {
+                <div class="product-item">
+                    <a href="@Url.Action("ProductDetails", "Home", new { id = product.ProductID })">
+                        <img src="@Url.Content(product.ProductImage)" alt="@product.ProductName" />
+                    </a>
+                    <p class="prodPrice">@product.ProductPrice</p>
+                    <p class="prodName">@product.ProductName</p>
+                    <p class="prodSale">Đã bán: @product.OrderDetails.Count()</p>
+                </div>
+            }
+        </div>
+    </section>
+
+    <div style="text-align:center; margin:20px 0;">
+        @Html.PagedListPager(Model.TopProducts, page => Url.Action("ProductDetails", new { id = Model.Product.ProductID, quantity = Model.Quantity, page }))
+    </div>
+}

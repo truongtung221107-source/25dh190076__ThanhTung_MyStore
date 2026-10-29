@@ -1,0 +1,22 @@
+﻿@model MyStore.Models.ViewModel.HomeProductVM
+
+@if (Model.FeaturedProducts != null && Model.FeaturedProducts.Any())
+{
+    <section class="featureProd">
+        <h2>Sản phẩm nổi bật</h2>
+        <div class="feature-container">
+            @foreach (var product in Model.FeaturedProducts)
+            {
+                <div class="product-item">
+                    <a href="@Url.Action("ProductDetails", "Home", new { id = product.ProductID })">
+                        <img src="@Url.Content(product.ProductImage)" alt="@product.ProductName" />
+                    </a>
+                    <p class="prodPrice">@product.ProductPrice</p>
+                    <p class="prodName">@product.ProductName</p>
+                    <p class="prodCate">@product.Category.CategoryName</p>
+                    <p class="prodSale">Đã bán: @product.OrderDetails.Count()</p>
+                </div>
+            }
+        </div>
+    </section>
+}

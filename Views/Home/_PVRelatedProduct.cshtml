@@ -1,0 +1,21 @@
+﻿@model MyStore.Models.ViewModel.ProductDetailVM
+
+@if (Model.RelatedProducts != null && Model.RelatedProducts.Any())
+{
+    <section class="relatedProd">
+        <h2>Sản phẩm tương tự</h2>
+        <div class="related-container">
+            @foreach (var product in Model.RelatedProducts)
+            {
+                <div class="product-item">
+                    <a href="@Url.Action("ProductDetails", "Home", new { id = product.ProductID })">
+                        <img src="@Url.Content(product.ProductImage)" alt="@product.ProductName" />
+                    </a>
+                    <p class="prodPrice">@product.ProductPrice</p>
+                    <p class="prodName">@product.ProductName</p>
+                    <p class="prodSale">Đã bán: @product.OrderDetails.Count()</p>
+                </div>
+            }
+        </div>
+    </section>
+}

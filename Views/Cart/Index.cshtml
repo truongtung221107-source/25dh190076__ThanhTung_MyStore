@@ -1,61 +1,69 @@
-﻿@model IEnumerable<MyStore.Models.CartItem>
-
+﻿@model MyStore.Models.ViewModel.Cart
 @{
-    ViewBag.Title = "Giỏ hàng của bạn";
+    ViewBag.Title = "Giỏ hàng";
 }
 
-<div class="container" style="margin-top: 30px;">
-    <h2>Giỏ hàng mua sắm</h2>
-    <hr />
+<link rel="stylesheet" type="text/css" href="~/Content/myStyle/CustomerCart.css" />
 
-    @if (Model != null && Model.Any())
-    {
-        <table class="table table-bordered table-striped">
-            <thead>
-                <tr>
-                    <th>Hình ảnh</th>
-                    <th>Tên sản phẩm</th>
-                    <th>Giá</th>
-                    <th>Số lượng</th>
-                    <th>Thành tiền</th>
-                    <th>Thao tác</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model)
-                {
+<h2 class="cart-title">GIỎ HÀNG</h2>
+
+@if (!Model.Items.Any())
+{
+    <p class="cart-empty">Giỏ hàng của bạn đang trống.</p>
+}
+else
+{
+    <div class="cart-wrapper">
+
+        <!-- CHI TIẾT GIỎ HÀNG -->
+        <div class="cart-detail">
+            <table class="cart-table">
+                <thead>
                     <tr>
-                        <td style="width: 100px;">
-                            @if (!string.IsNullOrEmpty(item.ProductImage))
-                            {
-                                <img src="@Url.Content(item.ProductImage)" style="width: 80px; height: 80px; object-fit: cover;" />
-                            }
-                        </td>
-                        <td style="vertical-align: middle;">@item.ProductName</td>
-                        <td style="vertical-align: middle;">@string.Format("{0:N0} VNĐ", item.ProductPrice)</td>
-                        <td style="vertical-align: middle;">@item.Quantity</td>
-                        <td style="vertical-align: middle; color: #e74c3c; font-weight: bold;">@string.Format("{0:N0} VNĐ", item.TotalPrice)</td>
-                        <td style="vertical-align: middle;">
-                            @Html.ActionLink("Xóa", "RemoveFromCart", new { id = item.ProductID }, new { @class = "btn btn-danger btn-sm" })
-                        </td>
+                        <th>Sản phẩm</th>
+                        <th></th>
+                        <th>Số lượng</th>
+                        <th>Đơn giá</th>
+                        <th>Thành tiền</th>
+                        <th></th>
                     </tr>
-                }
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Items)
+                    {
+                        <tr>
+                            <td><img src="@Url.Content(item.ProductImage)" alt="@item.ProductName" /></td>
+                            <td>@item.ProductName</td>
+                            <td>
+                                @using (Html.BeginForm("UpdateQuantity", "Cart", FormMethod.Post))
+                                {
+                                    <input type="hidden" name="id" value="@item.ProductID" />
+                                    <input type="number" name="quantity" value="@item.Quantity" min="1" />
+                                    <button type="submit">Cập nhật</button>
+                                }
+                            </td>
+                            <td>@item.UnitPrice.ToString("N0")</td>
+                            <td>@item.TotalPrice.ToString("N0")</td>
+                            <td>
+                                @using (Html.BeginForm("RemoveFromCart", "Cart", FormMethod.Post))
+                                {
+                                    <input type="hidden" name="id" value="@item.ProductID" />
+                                    <button type="submit" class="btn-remove">Xóa</button>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
 
-        <div class="text-right" style="margin-top: 20px;">
-            <h3>Tổng tiền thanh toán: <span style="color: #e74c3c;">@string.Format("{0:N0} VNĐ", ViewBag.Total)</span></h3>
-            <br />
-            @Html.ActionLink("Tiếp tục mua sắm", "Index", "Home", null, new { @class = "btn btn-secondary" })
-            <a href="@Url.Action("Checkout", "Cart")" class="btn btn-success btn-lg">Tiến hành đặt hàng</a>
+        <!-- TÍNH TIỀN -->
+        <div class="cart-total">
+            <p>Tổng giá trị: <strong>@Model.TotalValue().ToString("N0") đ</strong></p>
+            <a href="#" class="btn-buy">Mua hàng</a>
         </div>
-    }
-    else
-    {
-        <div class="alert alert-info text-center" style="padding: 40px;">
-            <h4>Giỏ hàng của bạn đang trống!</h4>
-            <p>Hãy quay lại trang chủ để chọn mua những sản phẩm ưng ý nhé.</p>
-            @Html.ActionLink("Về trang chủ", "Index", "Home", null, new { @class = "btn btn-primary" })
-        </div>
-    }
-</div>
+    </div>
+}
+
+<!-- NÚT TIẾP TỤC MUA HÀNG -->
+<a href="@Url.Action("Index", "Home")" class="btn-continue">Tiếp tục mua hàng</a>

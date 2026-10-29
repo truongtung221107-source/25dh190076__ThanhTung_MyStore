@@ -1,8 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System;
 using System.Web.Mvc;
-using MyStore.Models;
 using MyStore.Models.EDM;
+using MyStore.Models.ViewModel;
 
 namespace MyStore.Controllers
 {
@@ -10,132 +9,61 @@ namespace MyStore.Controllers
     {
         private MyStoreEntities db = new MyStoreEntities();
 
-        public List<CartItem> GetCart()
+        // Lấy dịch vụ giỏ hàng (lưu trong Session)
+        private CartService GetCartService()
         {
-            var listCart = Session["Cart"] as List<CartItem>;
-            if (listCart == null)
-            {
-                listCart = new List<CartItem>();
-                Session["Cart"] = listCart;
-            }
-            return listCart;
+            return new CartService(Session);
         }
 
-        public ActionResult AddToCart(int id, int quantity = 1)
-        {
-            var cart = GetCart();
-            var item = cart.FirstOrDefault(p => p.ProductID == id);
-
-            if (item == null)
-            {
-                var product = db.Products.Find(id);
-                if (product != null)
-                {
-                    cart.Add(new CartItem
-                    {
-                        ProductID = product.ProductID,
-                        ProductName = product.ProductName,
-                        ProductImage = product.ProductImage,
-                        ProductPrice = product.ProductPrice,
-                        Quantity = quantity
-                    });
-                }
-            }
-            else
-            {
-                item.Quantity += quantity;
-            }
-
-            return RedirectToAction("Index");
-        }
-
+        // Hiển thị giỏ hàng
         public ActionResult Index()
         {
-            var cart = GetCart();
-            ViewBag.Total = cart.Sum(p => p.TotalPrice);
+            var cart = GetCartService().GetCart();
             return View(cart);
         }
 
-        public ActionResult RemoveFromCart(int id)
+        // Thêm sản phẩm vào giỏ
+        [HttpPost]
+        public ActionResult AddToCart(int id, int quantity = 1)
         {
-            var cart = GetCart();
-            var item = cart.FirstOrDefault(p => p.ProductID == id);
-            if (item != null)
-            {
-                cart.Remove(item);
-            }
+            var product = db.Products.Find(id);
+            if (product == null)
+                return HttpNotFound();
+
+            var cart = GetCartService().GetCart();
+            cart.AddItem(
+                product.ProductID,
+                product.ProductImage,
+                product.ProductName,
+                Convert.ToDecimal(product.ProductPrice),
+                quantity,
+                product.Category.CategoryName);
+
             return RedirectToAction("Index");
         }
 
-        [HttpGet]
-        public ActionResult Checkout()
-        {
-            var cart = GetCart();
-            if (cart == null || !cart.Any())
-            {
-                return RedirectToAction("Index");
-            }
-            ViewBag.Total = cart.Sum(p => p.TotalPrice);
-            return View();
-        }
-
+        // Xóa sản phẩm khỏi giỏ
         [HttpPost]
-        public ActionResult Checkout(string customerName, string customerPhone, string customerAddress)
+        public ActionResult RemoveFromCart(int id)
         {
-            var cart = GetCart();
-            if (cart == null || !cart.Any())
-            {
-                return RedirectToAction("Index");
-            }
-
-            using (var transaction = db.Database.BeginTransaction())
-            {
-                try
-                {
-                    var order = new Order
-                    {
-                        CustomerID = 1,
-                        OrderDate = System.DateTime.Now,
-                        TotalAmount = cart.Sum(p => p.TotalPrice),
-                        PaymentStatus = "Chưa thanh toán",
-                        AddressDelivery = customerAddress + " - Người nhận: " + customerName + " (" + customerPhone + ")"
-                    };
-                    db.Orders.Add(order);
-                    db.SaveChanges();
-
-                    foreach (var item in cart)
-                    {
-                        var orderDetail = new OrderDetail
-                        {
-                            OrderID = order.OrderID,
-                            ProductID = item.ProductID,
-                            Quantity = item.Quantity,
-                            // Nếu trong OrderDetail của bạn cột giá tên khác, ví dụ UnitPrice hoặc ProductPrice thì gõ lại ở đây:
-                            UnitPrice = (decimal)item.ProductPrice
-                        };
-                        db.OrderDetails.Add(orderDetail);
-                    }
-                    db.SaveChanges();
-
-                    transaction.Commit();
-                    Session["Cart"] = null;
-
-                    return RedirectToAction("OrderSuccess");
-                }
-                catch
-                {
-                    transaction.Rollback();
-                    ModelState.AddModelError("", "Có lỗi xảy ra trong quá trình đặt hàng. Vui lòng thử lại!");
-                }
-            }
-
-            ViewBag.Total = cart.Sum(p => p.TotalPrice);
-            return View();
+            GetCartService().GetCart().RemoveItem(id);
+            return RedirectToAction("Index");
         }
 
-        public ActionResult OrderSuccess()
+        // Làm trống giỏ hàng
+        public ActionResult ClearCart()
         {
-            return View();
+            GetCartService().ClearCart();
+            return RedirectToAction("Index");
+        }
+
+        // Cập nhật số lượng
+        [HttpPost]
+        public ActionResult UpdateQuantity(int id, int quantity)
+        {
+            if (quantity < 1) quantity = 1;
+            GetCartService().GetCart().UpdateQuantity(id, quantity);
+            return RedirectToAction("Index");
         }
     }
 }

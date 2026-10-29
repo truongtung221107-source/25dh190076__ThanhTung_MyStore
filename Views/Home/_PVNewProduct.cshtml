@@ -1,0 +1,30 @@
+﻿@using PagedList.Mvc
+@model MyStore.Models.ViewModel.HomeProductVM
+
+@if (Model.NewProducts != null && Model.NewProducts.Any())
+{
+    <section class="listProd">
+        <h2>Sản phẩm mới</h2>
+        <div class="list-container">
+            @foreach (var product in Model.NewProducts)
+            {
+                <div class="product-item">
+                    <a href="@Url.Action("ProductDetails", "Home", new { id = product.ProductID })">
+                        <img src="@Url.Content(product.ProductImage)" alt="@product.ProductName" />
+                    </a>
+                    <p class="prodPrice">@product.ProductPrice</p>
+                    <p class="prodName">@product.ProductName</p>
+                    <p class="prodSale">Đã bán: @product.OrderDetails.Count()</p>
+                </div>
+            }
+        </div>
+    </section>
+
+    <div class="pagination-container">
+        @Html.PagedListPager(Model.NewProducts, page => Url.Action("Index", new { page, searchTerm = Model.SearchTerm }))
+    </div>
+}
+else
+{
+    <p>Không tìm thấy sản phẩm nào phù hợp.</p>
+}

@@ -1,0 +1,51 @@
+﻿@model MyStore.Models.ViewModel.ProductDetailVM
+@{
+    ViewBag.Title = Model.Product.ProductName;
+}
+
+<link rel="stylesheet" type="text/css" href="~/Content/myStyle/CustomerDetailProduct.css" />
+
+<!-- THÔNG TIN SẢN PHẨM -->
+<section class="detail-container">
+    <div class="detail-image">
+        <img src="@Url.Content(Model.Product.ProductImage)" alt="@Model.Product.ProductName" />
+    </div>
+
+    <div class="detail-info">
+        <h2>@Model.Product.ProductName</h2>
+        <p class="detail-cate">Danh mục: @Model.Product.Category.CategoryName</p>
+        <p class="detail-price">@Model.Product.ProductPrice đ</p>
+        <p>@Model.Product.ProductDescription</p>
+        <p class="detail-sold">Đã bán: @Model.Product.OrderDetails.Count()</p>
+
+        <!-- PHẦN CHỌN MUA -->
+        <div class="buy-box">
+            @using (Html.BeginForm("AddToCart", "Cart", FormMethod.Post))
+            {
+                <input type="hidden" name="id" value="@Model.Product.ProductID" />
+                <label>Số lượng:</label>
+                <input type="number" name="quantity" id="qty" value="@Model.Quantity" min="1"
+                       data-price="@Convert.ToInt64(Model.Product.ProductPrice)" />
+                <p>Tạm tính: <strong id="subtotal"></strong></p>
+                <button type="submit" class="btn-add">Thêm vào giỏ</button>
+            }
+        </div>
+    </div>
+</section>
+
+<!-- SẢN PHẨM TƯƠNG TỰ -->
+@Html.Partial("_PVRelatedProduct", Model)
+
+<!-- TOP DEALS -->
+@Html.Partial("_PVTopProduct", Model)
+
+<script>
+    var qty = document.getElementById("qty");
+    var subtotal = document.getElementById("subtotal");
+    function updateSubtotal() {
+        var total = parseInt(qty.value || 1) * parseInt(qty.dataset.price);
+        subtotal.innerText = total.toLocaleString("vi-VN") + " đ";
+    }
+    qty.addEventListener("input", updateSubtotal);
+    updateSubtotal();
+</script>
