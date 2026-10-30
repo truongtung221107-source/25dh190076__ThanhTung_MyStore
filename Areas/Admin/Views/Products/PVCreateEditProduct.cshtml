@@ -50,5 +50,6 @@
     <div class="col-md-10">
         @Html.TextBoxFor(model => model.UploadImg, new { @type = "file", @class = "form-control" })
         @Html.ValidationMessageFor(model => model.ProductImage, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.ProductImage)
     </div>
 </div>

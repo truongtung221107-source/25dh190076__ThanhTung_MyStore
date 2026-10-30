@@ -1,4 +1,9 @@
-﻿<!DOCTYPE html>
+﻿@{
+    var customerName = Session["CustomerName"] as string;
+    var cart = Session["Cart"] as MyStore.Models.ViewModel.Cart;
+    int cartCount = cart == null ? 0 : cart.Items.Count();
+}
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
@@ -20,6 +25,21 @@
                     <li>@Html.ActionLink("Home", "Index", "Home", new { area = "" }, new { @class = "nav-link" })</li>
                     <li>@Html.ActionLink("About", "About", "Home", new { area = "" }, new { @class = "nav-link" })</li>
                     <li>@Html.ActionLink("Contact", "Contact", "Home", new { area = "" }, new { @class = "nav-link" })</li>
+                </ul>
+
+                <!-- MENU BÊN PHẢI: tài khoản và giỏ hàng -->
+                <ul class="navbar-nav">
+                    @if (customerName != null)
+                    {
+                        <li><span class="nav-link text-white">Xin chào, @customerName</span></li>
+                        <li>@Html.ActionLink("Đăng xuất", "Logout", "Account", new { area = "" }, new { @class = "nav-link" })</li>
+                    }
+                    else
+                    {
+                        <li>@Html.ActionLink("Đăng nhập", "Login", "Account", new { area = "" }, new { @class = "nav-link" })</li>
+                        <li>@Html.ActionLink("Đăng ký", "Register", "Account", new { area = "" }, new { @class = "nav-link" })</li>
+                    }
+                    <li>@Html.ActionLink("Giỏ hàng (" + cartCount + ")", "Index", "Cart", new { area = "" }, new { @class = "nav-link" })</li>
                 </ul>
             </div>
         </div>
