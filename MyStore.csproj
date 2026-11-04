@@ -218,6 +218,7 @@
     <Content Include="Content\myStyle\CustomerDetailProduct.css" />
     <Content Include="Content\myStyle\CustomerHome.css" />
     <Content Include="Content\PagedList.css" />
+    <Content Include="database_update.sql" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
