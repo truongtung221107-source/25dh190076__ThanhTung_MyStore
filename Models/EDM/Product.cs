@@ -11,9 +11,7 @@ namespace MyStore.Models.EDM
 {
     using System;
     using System.Collections.Generic;
-    using System.Web;
-    using System.ComponentModel.DataAnnotations.Schema;
-
+    
     public partial class Product
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
@@ -32,7 +30,5 @@ namespace MyStore.Models.EDM
         public virtual Category Category { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<OrderDetail> OrderDetails { get; set; }
-        [NotMapped]
-        public HttpPostedFileBase UploadImg { get; set; }
     }
 }

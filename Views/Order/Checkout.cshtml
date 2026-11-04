@@ -1,0 +1,88 @@
+﻿@model MyStore.Models.ViewModel.CheckoutVM
+@{
+    ViewBag.Title = "Thanh toán";
+}
+
+<h2>THANH TOÁN</h2>
+
+@using (Html.BeginForm("Checkout", "Order", FormMethod.Post))
+{
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+    <div class="row">
+        <div class="col-md-7">
+
+            <!-- HÌNH THỨC GIAO HÀNG -->
+            <h5>Hình thức giao hàng</h5>
+            <div>
+                <label>
+                    <input type="radio" name="DeliveryMethod" value="Giao hàng tiêu chuẩn"
+                           @(Model.DeliveryMethod == null || Model.DeliveryMethod == "Giao hàng tiêu chuẩn" ? "checked" : "") />
+                    Giao hàng tiêu chuẩn
+                </label><br />
+                <label>
+                    <input type="radio" name="DeliveryMethod" value="Giao hàng nhanh"
+                           @(Model.DeliveryMethod == "Giao hàng nhanh" ? "checked" : "") />
+                    Giao hàng nhanh
+                </label>
+                @Html.ValidationMessageFor(m => m.DeliveryMethod, "", new { @class = "text-danger" })
+            </div>
+            <hr />
+
+            <!-- HÌNH THỨC THANH TOÁN -->
+            <h5>Hình thức thanh toán</h5>
+            <div>
+                <label>
+                    <input type="radio" name="PaymentMethod" value="Thanh toán khi nhận hàng (COD)"
+                           @(Model.PaymentMethod == null || Model.PaymentMethod == "Thanh toán khi nhận hàng (COD)" ? "checked" : "") />
+                    Thanh toán khi nhận hàng (COD)
+                </label><br />
+                <label>
+                    <input type="radio" name="PaymentMethod" value="Chuyển khoản"
+                           @(Model.PaymentMethod == "Chuyển khoản" ? "checked" : "") />
+                    Chuyển khoản
+                </label>
+                @Html.ValidationMessageFor(m => m.PaymentMethod, "", new { @class = "text-danger" })
+            </div>
+            <hr />
+
+            <!-- GIAO TỚI -->
+            <h5>Giao tới</h5>
+            <p>@Model.CustomerName - @Model.CustomerPhone</p>
+            @Html.TextBoxFor(m => m.ShippingAddress, new { @class = "form-control", @readonly = "readonly", id = "ShippingAddress" })
+            @Html.ValidationMessageFor(m => m.ShippingAddress, "", new { @class = "text-danger" })
+            <button type="button" class="btn btn-secondary btn-sm mt-2" onclick="enableAddressEdit()">Chỉnh sửa</button>
+        </div>
+
+        <!-- ĐƠN HÀNG -->
+        <div class="col-md-5">
+            <h5>Đơn hàng</h5>
+            <table class="table">
+                <thead>
+                    <tr><th>Sản phẩm</th><th>SL</th><th>Thành tiền</th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Items)
+                    {
+                        <tr>
+                            <td>@item.ProductName</td>
+                            <td>@item.Quantity</td>
+                            <td>@item.TotalPrice.ToString("N0")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <p>Tổng cộng: <strong>@Model.TotalAmount.ToString("N0") đ</strong></p>
+            <input type="submit" value="Đặt hàng" class="btn btn-danger" />
+            @Html.ActionLink("Quay lại giỏ hàng", "Index", "Cart", null, new { @class = "btn btn-warning" })
+        </div>
+    </div>
+}
+
+<script>
+    function enableAddressEdit() {
+        var box = document.getElementById("ShippingAddress");
+        box.removeAttribute("readonly");
+        box.focus();
+    }
+</script>

@@ -1,0 +1,62 @@
+﻿@model IEnumerable<MyStore.Models.EDM.Order>
+@{
+    ViewBag.Title = "Đơn hàng của tôi";
+    string current = ViewBag.Status as string ?? "";
+    string[] tabs = { "", "Chờ thanh toán", "Đang xử lý", "Đang vận chuyển", "Đã giao", "Đã hủy" };
+}
+
+<h2>ĐƠN HÀNG CỦA TÔI</h2>
+
+<!-- TÌM KIẾM -->
+@using (Html.BeginForm("MyOrder", "Order", FormMethod.Get))
+{
+    <input type="hidden" name="status" value="@current" />
+    <div class="d-flex gap-2 mb-3">
+        <input type="text" name="searchTerm" value="@ViewBag.SearchTerm" class="form-control"
+               placeholder="Tìm theo mã đơn hàng hoặc tên sản phẩm" />
+        <button type="submit" class="btn btn-primary text-nowrap">Tìm kiếm</button>
+    </div>
+}
+
+<!-- CÁC TAB TRẠNG THÁI -->
+<ul class="nav nav-tabs mb-3">
+    @foreach (var t in tabs)
+    {
+        string label = t == "" ? "Tất cả đơn" : t;
+        <li class="nav-item">
+            <a class="nav-link @(current == t ? "active" : "")"
+               href="@Url.Action("MyOrder", "Order", new { status = t, searchTerm = ViewBag.SearchTerm })">@label</a>
+        </li>
+    }
+</ul>
+
+<!-- DANH SÁCH ĐƠN HÀNG -->
+@if (!Model.Any())
+{
+    <p class="text-muted">Không có đơn hàng nào.</p>
+}
+else
+{
+    foreach (var order in Model)
+    {
+        <div class="card mb-3">
+            <div class="card-header d-flex justify-content-between">
+                <span>Mã đơn: <strong>@order.OrderID</strong> - @order.OrderDate.ToString("dd/MM/yyyy")</span>
+                <span class="text-danger">@order.PaymentStatus</span>
+            </div>
+            <div class="card-body">
+                @foreach (var d in order.OrderDetails)
+                {
+                    <div class="d-flex justify-content-between">
+                        <span>@d.Product.ProductName x @d.Quantity</span>
+                        <span>@d.UnitPrice.ToString("N0") đ</span>
+                    </div>
+                }
+            </div>
+            <div class="card-footer d-flex justify-content-between align-items-center">
+                <span>Tổng tiền: <strong>@order.TotalAmount.ToString("N0") đ</strong></span>
+                @Html.ActionLink("Xem chi tiết", "OrderSuccess", "Order", new { id = order.OrderID }, new { @class = "btn btn-outline-primary btn-sm" })
+            </div>
+        </div>
+    }
+}

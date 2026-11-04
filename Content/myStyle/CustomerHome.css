@@ -1,80 +1,178 @@
-﻿.banner {
+﻿/* BANNER */
+.banner {
     text-align: center;
-    padding: 30px;
-    background: #f3f3f3;
+    padding: 60px 20px;
+    margin: 20px 0;
+    border-radius: 12px;
+    color: #fff;
+    background: linear-gradient(135deg, #b22222, #ff7a59);
 }
 
-.searchProd {
-    text-align: center;
-    padding: 20px;
-}
-
-    .searchProd input {
-        width: 300px;
-        padding: 6px;
+    .banner h2 {
+        font-weight: 700;
+        margin-bottom: 10px;
     }
 
+    .banner p {
+        font-size: 18px;
+        margin: 0;
+        opacity: .95;
+    }
+
+/* TÌM KIẾM */
+.searchProd {
+    text-align: center;
+    padding: 25px 0 10px;
+}
+
+    .searchProd h2 {
+        font-size: 24px;
+        margin-bottom: 15px;
+    }
+
+    .searchProd form {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .searchProd input {
+        width: min(420px, 70%);
+        padding: 10px 16px;
+        border: 1px solid #ddd;
+        border-radius: 25px;
+        outline: none;
+    }
+
+        .searchProd input:focus {
+            border-color: #b22222;
+        }
+
     .searchProd button {
-        padding: 6px 14px;
+        padding: 10px 24px;
         background: #b22222;
         color: #fff;
         border: none;
+        border-radius: 25px;
+        cursor: pointer;
     }
 
+        .searchProd button:hover {
+            background: #8f1b1b;
+        }
+
+/* TIÊU ĐỀ MỖI PHẦN */
 .featureProd h2, .listProd h2 {
     text-align: center;
     color: #b22222;
+    font-weight: 700;
+    margin: 30px 0 20px;
 }
 
-/* Slider: cuộn ngang */
+    .featureProd h2::after, .listProd h2::after {
+        content: "";
+        display: block;
+        width: 60px;
+        height: 3px;
+        background: #b22222;
+        margin: 8px auto 0;
+        border-radius: 2px;
+    }
+
+/* SLIDER SẢN PHẨM NỔI BẬT (cuộn ngang) */
 .feature-container {
     display: flex;
-    gap: 15px;
+    gap: 18px;
     overflow-x: auto;
-    padding: 10px;
+    padding: 10px 5px 20px;
+    scroll-snap-type: x mandatory;
 }
 
-/* Danh sách: xếp lưới */
+    .feature-container .product-item {
+        width: 200px;
+        flex-shrink: 0;
+        scroll-snap-align: start;
+    }
+
+/* DANH SÁCH SẢN PHẨM MỚI (xếp lưới) */
 .list-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
-    padding: 10px;
-    justify-content: center;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 20px;
+    padding: 10px 5px;
 }
 
+/* THẺ SẢN PHẨM */
 .product-item {
-    width: 180px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    padding: 8px;
-    flex-shrink: 0;
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    padding: 12px;
+    transition: transform .2s, box-shadow .2s;
 }
+
+    .product-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, .12);
+    }
 
     .product-item img {
         width: 100%;
-        height: 200px;
+        height: 180px;
         object-fit: contain;
+        border-radius: 8px;
     }
 
 .prodPrice {
-    color: #1a3cff;
-    font-weight: bold;
-    margin: 4px 0;
+    color: #d0021b;
+    font-weight: 700;
+    font-size: 17px;
+    margin: 8px 0 4px;
 }
 
 .prodName {
     font-size: 14px;
+    font-weight: 600;
     margin: 4px 0;
+    min-height: 40px;
 }
 
 .prodCate, .prodSale {
     font-size: 12px;
-    color: #666;
+    color: #777;
     margin: 2px 0;
 }
 
+/* PHÂN TRANG */
 .pagination-container {
-    text-align: center;
-    margin: 20px 0;
+    display: flex;
+    justify-content: center;
+    margin: 25px 0;
 }
+
+    .pagination-container ul {
+        list-style: none;
+        display: flex;
+        gap: 6px;
+        padding: 0;
+        margin: 0;
+    }
+
+    .pagination-container a, .pagination-container span {
+        display: block;
+        padding: 6px 12px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        text-decoration: none;
+        color: #b22222;
+    }
+
+    .pagination-container .active a, .pagination-container .active span {
+        background: #b22222;
+        color: #fff;
+        border-color: #b22222;
+    }
+
+    .pagination-container .disabled span {
+        color: #aaa;
+    }

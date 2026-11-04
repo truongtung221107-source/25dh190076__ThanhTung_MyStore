@@ -60,7 +60,7 @@ else
         <!-- TÍNH TIỀN -->
         <div class="cart-total">
             <p>Tổng giá trị: <strong>@Model.TotalValue().ToString("N0") đ</strong></p>
-            <a href="#" class="btn-buy">Mua hàng</a>
+            @Html.ActionLink("Mua hàng", "Checkout", "Order", null, new { @class = "btn-buy" })
         </div>
     </div>
 }

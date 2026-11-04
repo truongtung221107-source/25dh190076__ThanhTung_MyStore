@@ -55,7 +55,7 @@
             <td>@order.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
             <td>@string.Format("{0:N0} VNĐ", order.TotalAmount)</td>
             <td>@order.PaymentStatus</td>
-            <td>@order.AddressDelivery</td>
+            <td>@order.ShippingAddress</td>
         </tr>
     }
 </table>
@@ -89,7 +89,7 @@ else
                     <td>@o.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
                     <td>@o.TotalAmount.ToString("N0") đ</td>
                     <td>@o.PaymentStatus</td>
-                    <td>@o.AddressDelivery</td>
+                    <td>@o.ShippingAddress</td>
                     <td>@Html.ActionLink("Xem chi tiết", "OrderDetails", "Customers", new { id = o.OrderID }, new { @class = "btn btn-primary btn-sm" })</td>
                 </tr>
             }

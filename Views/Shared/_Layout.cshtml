@@ -32,6 +32,7 @@
                     @if (customerName != null)
                     {
                         <li><span class="nav-link text-white">Xin chào, @customerName</span></li>
+                        <li>@Html.ActionLink("Đơn hàng của tôi", "MyOrder", "Order", new { area = "" }, new { @class = "nav-link" })</li>
                         <li>@Html.ActionLink("Đăng xuất", "Logout", "Account", new { area = "" }, new { @class = "nav-link" })</li>
                     }
                     else

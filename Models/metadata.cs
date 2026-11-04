@@ -76,7 +76,7 @@ namespace MyStore.Models.EDM
 
         [Required(ErrorMessage = "Địa chỉ giao hàng không được để trống")]
         [Display(Name = "Địa chỉ giao hàng")]
-        public string AddressDelivery { get; set; }
+        public string ShippingAddress { get; set; }
     }
 
     public class OrderDetailMetadata
