@@ -25,7 +25,13 @@ namespace MyStore.Models.EDM
         [Range(1, 1000000000, ErrorMessage = "Giá phải lớn hơn 0")]
         [Display(Name = "Giá")]
         public decimal ProductPrice { get; set; }
+
+        [Required(ErrorMessage = "Số lượng tồn không được để trống")]
+        [Range(0, 100000, ErrorMessage = "Số lượng tồn từ 0 đến 100000")]
+        [Display(Name = "Số lượng tồn")]
+        public int Quantity { get; set; }
     }
+}
 
     public class UserMetadata
     {
@@ -89,4 +95,3 @@ namespace MyStore.Models.EDM
         [Display(Name = "Đơn giá")]
         public decimal UnitPrice { get; set; }
     }
-}

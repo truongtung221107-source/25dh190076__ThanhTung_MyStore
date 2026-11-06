@@ -73,7 +73,9 @@
 <table class="table table-bordered table-striped">
     <tr>
         <th>Tên sản phẩm</th>
+        <th>Danh mục</th>
         <th>Giá</th>
+        <th>Số lượng tồn</th>
         <th>Hình ảnh</th>
         <th>Thao tác</th>
     </tr>
@@ -81,7 +83,7 @@
     @if (!Model.Any())
     {
         <tr>
-            <td colspan="4" class="text-center">Không tìm thấy sản phẩm nào.</td>
+            <td colspan="6" class="text-center">Không tìm thấy sản phẩm nào.</td>
         </tr>
     }
 
@@ -89,7 +91,18 @@
     {
         <tr>
             <td>@Html.DisplayFor(modelItem => item.ProductName)</td>
+            <td>@item.Category.CategoryName</td>
             <td>@string.Format("{0:N0} VNĐ", item.ProductPrice)</td>
+            <td>
+                @if (item.Quantity == 0)
+                {
+                    <span class="text-danger fw-bold">Hết hàng</span>
+                }
+                else
+                {
+                    @item.Quantity
+                }
+            </td>
             <td>
                 @if (!string.IsNullOrEmpty(item.ProductImage))
                 {

@@ -1,0 +1,81 @@
+﻿@using PagedList
+@using PagedList.Mvc
+@model IPagedList<MyStore.Models.EDM.Order>
+
+@{
+    ViewBag.Title = "Quản lý đơn hàng";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<style>
+    .pagination {
+        display: flex;
+        list-style: none;
+        padding-left: 0;
+        gap: 4px;
+    }
+
+        .pagination li a, .pagination li span {
+            display: block;
+            padding: 6px 12px;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            text-decoration: none;
+            color: #0d6efd;
+        }
+
+        .pagination li.active a, .pagination li.active span {
+            background: #0d6efd;
+            color: #fff;
+        }
+
+        .pagination li.disabled a, .pagination li.disabled span {
+            color: #6c757d;
+            pointer-events: none;
+        }
+</style>
+
+<h2>Quản lý đơn hàng</h2>
+
+@using (Html.BeginForm("Index", "Orders", FormMethod.Get))
+{
+    <div class="d-flex gap-2 mb-3">
+        <input type="text" name="searchString" value="@ViewBag.SearchString" class="form-control"
+               placeholder="Tìm theo mã đơn hàng hoặc tên khách hàng..." />
+        <button type="submit" class="btn btn-primary text-nowrap">Tìm</button>
+        @Html.ActionLink("Xóa lọc", "Index", null, new { @class = "btn btn-secondary text-nowrap" })
+    </div>
+}
+
+<table class="table table-bordered table-striped">
+    <tr>
+        <th>Mã đơn</th>
+        <th>Khách hàng</th>
+        <th>Ngày đặt</th>
+        <th>Tổng tiền</th>
+        <th>Trạng thái</th>
+        <th>Thao tác</th>
+    </tr>
+
+    @if (!Model.Any())
+    {
+        <tr><td colspan="6" class="text-center">Không có đơn hàng nào.</td></tr>
+    }
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.OrderID</td>
+            <td>@item.Customer.CustomerName</td>
+            <td>@item.OrderDate.ToString("dd/MM/yyyy")</td>
+            <td>@item.TotalAmount.ToString("N0") VNĐ</td>
+            <td>@item.PaymentStatus</td>
+            <td>@Html.ActionLink("Chi tiết", "Details", new { id = item.OrderID }, new { @class = "btn btn-info btn-sm" })</td>
+        </tr>
+    }
+</table>
+
+<div>
+    Trang @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) / @Model.PageCount
+</div>
+@Html.PagedListPager(Model, page => Url.Action("Index", new { page, searchString = ViewBag.SearchString }))

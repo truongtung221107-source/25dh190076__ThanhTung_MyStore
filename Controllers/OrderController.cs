@@ -118,6 +118,27 @@ namespace MyStore.Controllers
 
             return View(order);
         }
+        // CHI TIẾT ĐƠN HÀNG (hóa đơn)
+        public ActionResult OrderDetail(int? id)
+        {
+            var customer = GetCustomer();
+            if (customer == null)
+                return RedirectToAction("Login", "Account");
+
+            if (id == null)
+                return RedirectToAction("MyOrder");
+
+            // Chỉ cho xem đơn của chính khách hàng đang đăng nhập
+            var order = db.Orders
+                .Include("Customer")
+                .Include("OrderDetails.Product")
+                .FirstOrDefault(o => o.OrderID == id && o.CustomerID == customer.CustomerID);
+
+            if (order == null)
+                return HttpNotFound();
+
+            return View(order);
+        }
         // TRANG ĐƠN HÀNG CỦA TÔI
         public ActionResult MyOrder(string status, string searchTerm)
         {

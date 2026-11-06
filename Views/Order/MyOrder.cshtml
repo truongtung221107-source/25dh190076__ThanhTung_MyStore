@@ -55,7 +55,7 @@ else
             </div>
             <div class="card-footer d-flex justify-content-between align-items-center">
                 <span>Tổng tiền: <strong>@order.TotalAmount.ToString("N0") đ</strong></span>
-                @Html.ActionLink("Xem chi tiết", "OrderSuccess", "Order", new { id = order.OrderID }, new { @class = "btn btn-outline-primary btn-sm" })
+                @Html.ActionLink("Xem chi tiết", "OrderDetail", "Order", new { id = order.OrderID }, new { @class = "btn btn-outline-primary btn-sm" })
             </div>
         </div>
     }

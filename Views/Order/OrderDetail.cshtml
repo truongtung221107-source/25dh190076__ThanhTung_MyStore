@@ -1,0 +1,10 @@
+﻿@model MyStore.Models.EDM.Order
+@{
+    ViewBag.Title = "Chi tiết đơn hàng";
+}
+
+@Html.Partial("_PVInvoice", Model)
+
+<p class="text-center">
+    @Html.ActionLink("Quay lại đơn hàng của tôi", "MyOrder", "Order", null, new { @class = "btn btn-primary" })
+</p>

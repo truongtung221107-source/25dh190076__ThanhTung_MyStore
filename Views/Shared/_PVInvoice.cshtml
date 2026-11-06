@@ -1,0 +1,81 @@
+﻿@model MyStore.Models.EDM.Order
+
+<style>
+    .invoice {
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 30px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        background: #fff;
+    }
+
+        .invoice h3 {
+            text-align: center;
+            text-transform: uppercase;
+            margin-bottom: 25px;
+        }
+
+        .invoice .info p {
+            margin: 4px 0;
+        }
+
+        .invoice table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .invoice th, .invoice td {
+            border: 1px solid #ccc;
+            padding: 8px;
+        }
+
+        .invoice th {
+            background: #f3f3f3;
+        }
+
+        .invoice .total {
+            text-align: right;
+            margin-top: 15px;
+            font-size: 18px;
+        }
+</style>
+
+<div class="invoice">
+    <h3>Hóa đơn mua hàng</h3>
+
+    <div class="info">
+        <p><strong>Mã đơn hàng:</strong> @Model.OrderID</p>
+        <p><strong>Ngày đặt:</strong> @Model.OrderDate.ToString("dd/MM/yyyy")</p>
+        <p><strong>Khách hàng:</strong> @Model.Customer.CustomerName - @Model.Customer.CustomerPhone</p>
+        <p><strong>Địa chỉ giao hàng:</strong> @Model.ShippingAddress</p>
+        <p><strong>Hình thức giao hàng:</strong> @Model.DeliveryMethod</p>
+        <p><strong>Hình thức thanh toán:</strong> @Model.PaymentMethod</p>
+        <p><strong>Trạng thái:</strong> @Model.PaymentStatus</p>
+    </div>
+
+    <table>
+        <tr>
+            <th>STT</th>
+            <th>Sản phẩm</th>
+            <th>Số lượng</th>
+            <th>Đơn giá</th>
+            <th>Thành tiền</th>
+        </tr>
+        @{ int stt = 0; }
+        @foreach (var d in Model.OrderDetails)
+        {
+            stt++;
+            <tr>
+                <td>@stt</td>
+                <td>@d.Product.ProductName</td>
+                <td>@d.Quantity</td>
+                <td>@d.UnitPrice.ToString("N0")</td>
+                <td>@((d.Quantity * d.UnitPrice).ToString("N0"))</td>
+            </tr>
+        }
+    </table>
+
+    <p class="total">Tổng cộng: <strong>@Model.TotalAmount.ToString("N0") VNĐ</strong></p>
+</div>

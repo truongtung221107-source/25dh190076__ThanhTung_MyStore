@@ -1,0 +1,36 @@
+﻿@model IEnumerable<MyStore.Models.EDM.Product>
+
+<h4 class="mt-4 text-danger">Danh sách hàng cần nhập (@Model.Count())</h4>
+
+<table class="table table-bordered table-striped">
+    <tr>
+        <th>Tên sản phẩm</th>
+        <th>Danh mục</th>
+        <th>Giá</th>
+        <th>Hình ảnh</th>
+        <th>Thao tác</th>
+    </tr>
+
+    @if (!Model.Any())
+    {
+        <tr><td colspan="5" class="text-center">Không có hàng cần nhập.</td></tr>
+    }
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.ProductName</td>
+            <td>@item.Category.CategoryName</td>
+            <td>@string.Format("{0:N0} VNĐ", item.ProductPrice)</td>
+            <td>
+                @if (!string.IsNullOrEmpty(item.ProductImage))
+                {
+                    <img src="@Url.Content(item.ProductImage)" style="width: 50px; height: 50px; object-fit: cover;" />
+                }
+            </td>
+            <td>
+                @Html.ActionLink("Nhập hàng", "Edit", "Products", new { id = item.ProductID }, new { @class = "btn btn-warning btn-sm" })
+            </td>
+        </tr>
+    }
+</table>

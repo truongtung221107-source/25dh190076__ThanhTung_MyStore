@@ -1,0 +1,11 @@
+﻿@model MyStore.Models.ViewModel.InventoryVM
+@{
+    ViewBag.Title = "Quản lý kho hàng";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>Quản lý kho hàng</h2>
+
+@Html.Partial("_PVInStock", Model.InStock)
+
+@Html.Partial("_PVOutOfStock", Model.OutOfStock)
