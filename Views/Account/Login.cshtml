@@ -4,6 +4,10 @@
 }
 
 <h2>Đăng nhập</h2>
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
 
 @using (Html.BeginForm("Login", "Account", FormMethod.Post))
 {

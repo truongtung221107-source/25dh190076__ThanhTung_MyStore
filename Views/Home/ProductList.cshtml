@@ -1,0 +1,84 @@
+﻿@using PagedList.Mvc
+@model MyStore.Models.ViewModel.ProductListVM
+@{
+    ViewBag.Title = Model.Category.CategoryName;
+    string sort = Model.SortOrder ?? "";
+}
+
+<link rel="stylesheet" type="text/css" href="~/Content/myStyle/CustomerHome.css" />
+
+<h2 class="text-center mt-4">@Model.Category.CategoryName</h2>
+
+<!-- TÌM KIẾM, LỌC, SẮP XẾP -->
+@using (Html.BeginForm("ProductList", "Home", FormMethod.Get))
+{
+    <input type="hidden" name="id" value="@Model.Category.CategoryID" />
+    <div class="d-flex flex-wrap gap-2 justify-content-center mb-4">
+        <input type="text" name="searchTerm" value="@Model.SearchTerm" class="form-control w-auto" placeholder="Tìm theo tên hoặc mô tả" />
+        <input type="number" name="minPrice" value="@Model.MinPrice" class="form-control w-auto" placeholder="Giá từ" />
+        <input type="number" name="maxPrice" value="@Model.MaxPrice" class="form-control w-auto" placeholder="Giá đến" />
+        <select name="sortOrder" class="form-select w-auto">
+            <option value="" @(sort == "" ? "selected" : "")>Mới nhất</option>
+            <option value="price_asc" @(sort == "price_asc" ? "selected" : "")>Giá tăng dần</option>
+            <option value="price_desc" @(sort == "price_desc" ? "selected" : "")>Giá giảm dần</option>
+            <option value="name_asc" @(sort == "name_asc" ? "selected" : "")>Tên A → Z</option>
+        </select>
+        <button type="submit" class="btn btn-danger">Tìm</button>
+        @Html.ActionLink("Xóa lọc", "ProductList", new { id = Model.Category.CategoryID }, new { @class = "btn btn-secondary" })
+    </div>
+}
+
+<!-- DANH SÁCH SẢN PHẨM -->
+@if (!Model.Products.Any())
+{
+    <p class="text-center text-muted">Không tìm thấy sản phẩm nào.</p>
+}
+else
+{
+    <div class="list-container">
+        @foreach (var product in Model.Products)
+        {
+            <div class="product-item">
+                <a href="@Url.Action("ProductDetails", "Home", new { id = product.ProductID })">
+                    <img src="@Url.Content(product.ProductImage)" alt="@product.ProductName" />
+                </a>
+                <p class="prodPrice">@product.ProductPrice.ToString("N0") đ</p>
+                <p class="prodName">@product.ProductName</p>
+                <p class="prodSale">Còn lại: @product.Quantity</p>
+
+                @using (Html.BeginForm("AddToCart", "Cart", FormMethod.Post))
+                {
+                    <input type="hidden" name="id" value="@product.ProductID" />
+                    <input type="hidden" name="quantity" value="1" />
+                    <button type="submit" class="btn btn-danger btn-sm w-100">Thêm vào giỏ</button>
+                }
+            </div>
+        }
+    </div>
+
+    <div class="pagination-container">
+        @Html.PagedListPager(Model.Products,
+            page => Url.Action("ProductList", new
+            {
+                id = Model.Category.CategoryID,
+                page,
+                searchTerm = Model.SearchTerm,
+                minPrice = Model.MinPrice,
+                maxPrice = Model.MaxPrice,
+                sortOrder = Model.SortOrder
+            }),
+            new PagedListRenderOptions
+            {
+                MaximumPageNumbersToDisplay = 5,
+                DisplayEllipsesWhenNotShowingAllPageNumbers = true,
+                DisplayLinkToFirstPage = PagedListDisplayMode.IfNeeded,
+                DisplayLinkToLastPage = PagedListDisplayMode.IfNeeded,
+                DisplayLinkToPreviousPage = PagedListDisplayMode.IfNeeded,
+                DisplayLinkToNextPage = PagedListDisplayMode.IfNeeded,
+                LinkToFirstPageFormat = "«",
+                LinkToPreviousPageFormat = "‹",
+                LinkToNextPageFormat = "›",
+                LinkToLastPageFormat = "»"
+            })
+    </div>
+}

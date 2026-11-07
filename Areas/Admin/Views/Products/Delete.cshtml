@@ -4,6 +4,10 @@
     ViewBag.Title = "Quản lý sản phẩm";
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
 }
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger">@ViewBag.Error</div>
+}
 
 <h2 class="bg-success" style="padding: 10px; border-radius: 4px;">XÓA SẢN PHẨM</h2>
 <h4 class="alert-danger" style="padding: 10px;">Bạn thực sự muốn xóa sản phẩm này à?</h4>

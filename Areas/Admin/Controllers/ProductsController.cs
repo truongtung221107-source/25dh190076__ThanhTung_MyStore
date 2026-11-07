@@ -183,6 +183,14 @@ namespace MyStore.Areas.Admin.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             Product product = db.Products.Find(id);
+
+            // Không cho xóa nếu sản phẩm đã có trong đơn hàng
+            if (db.OrderDetails.Any(d => d.ProductID == id))
+            {
+                ViewBag.Error = "Không thể xóa sản phẩm này vì đã có trong đơn hàng.";
+                return View("Delete", product);
+            }
+
             db.Products.Remove(product);
             db.SaveChanges();
             return RedirectToAction("Index");

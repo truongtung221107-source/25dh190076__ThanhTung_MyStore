@@ -35,6 +35,7 @@ CREATE TABLE [dbo].[Product] (
     [ProductDescription] NVARCHAR(MAX) NOT NULL,
     [ProductPrice] DECIMAL(18,2) NOT NULL,
     [ProductImage] NVARCHAR(MAX) NULL,
+    [Quantity] INT NOT NULL DEFAULT 50,
     CONSTRAINT [FK_Pro_Category] FOREIGN KEY ([CategoryID]) REFERENCES [dbo].[Category]([CategoryID])
 );
 GO

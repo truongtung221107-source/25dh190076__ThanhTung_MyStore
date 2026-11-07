@@ -111,6 +111,14 @@ namespace MyStore.Areas.Admin.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             Category category = db.Categories.Find(id);
+
+            // Không cho xóa nếu danh mục còn sản phẩm
+            if (db.Products.Any(p => p.CategoryID == id))
+            {
+                ViewBag.Error = "Không thể xóa danh mục này vì vẫn còn sản phẩm thuộc danh mục.";
+                return View("Delete", category);
+            }
+
             db.Categories.Remove(category);
             db.SaveChanges();
             return RedirectToAction("Index");

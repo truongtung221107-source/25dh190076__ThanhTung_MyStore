@@ -12,9 +12,15 @@
                     <a href="@Url.Action("ProductDetails", "Home", new { id = product.ProductID })">
                         <img src="@Url.Content(product.ProductImage)" alt="@product.ProductName" />
                     </a>
-                    <p class="prodPrice">@product.ProductPrice</p>
+                    <p class="prodPrice">@product.ProductPrice.ToString("N0") đ</p>
                     <p class="prodName">@product.ProductName</p>
                     <p class="prodSale">Đã bán: @product.OrderDetails.Count()</p>
+                    @using (Html.BeginForm("AddToCart", "Cart", FormMethod.Post))
+                    {
+                        <input type="hidden" name="id" value="@product.ProductID" />
+                        <input type="hidden" name="quantity" value="1" />
+                        <button type="submit" class="btn btn-danger btn-sm w-100">Thêm vào giỏ</button>
+                    }
                 </div>
             }
         </div>

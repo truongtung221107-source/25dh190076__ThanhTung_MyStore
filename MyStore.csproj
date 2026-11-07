@@ -196,6 +196,8 @@
     <Compile Include="Models\ViewModel\InventoryVM.cs" />
     <Compile Include="Models\ViewModel\LoginVM.cs" />
     <Compile Include="Models\ViewModel\ProductDetailVM.cs" />
+    <Compile Include="Models\ViewModel\ProductListVM.cs" />
+    <Compile Include="Models\ViewModel\ProfileVM.cs" />
     <Compile Include="Models\ViewModel\RegisterVM.cs" />
     <Compile Include="Models\ViewModel\UserSearchVM.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -321,6 +323,9 @@
     <Content Include="Views\Order\MyOrder.cshtml" />
     <Content Include="Views\Shared\_PVInvoice.cshtml" />
     <Content Include="Views\Order\OrderDetail.cshtml" />
+    <Content Include="Views\Home\ProductList.cshtml" />
+    <Content Include="Views\Shared\_CategoriesPV.cshtml" />
+    <Content Include="Views\Account\Edit.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

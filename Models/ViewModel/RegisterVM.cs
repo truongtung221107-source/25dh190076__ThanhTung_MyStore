@@ -26,7 +26,7 @@ namespace MyStore.Models.ViewModel
         public string CustomerName { get; set; }
 
         [Required(ErrorMessage = "Vui lòng nhập số điện thoại")]
-        [RegularExpression(@"^\d{9,11}$", ErrorMessage = "Số điện thoại gồm 9 đến 11 chữ số")]
+        [RegularExpression(@"^0\d{9,10}$", ErrorMessage = "Số điện thoại bắt đầu bằng 0, gồm 10 đến 11 chữ số")]
         [Display(Name = "Số điện thoại")]
         public string CustomerPhone { get; set; }
 

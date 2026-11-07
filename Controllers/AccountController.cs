@@ -61,9 +61,9 @@ namespace MyStore.Controllers
             db.Customers.Add(customer);
             db.SaveChanges();
 
-            // Đăng ký xong thì đăng nhập luôn và về Trang chủ
-            SignIn(user.Username, customer.CustomerID, customer.CustomerName, false);
-            return RedirectToAction("Index", "Home");
+            // Đăng ký xong thì chuyển sang trang Đăng nhập
+            TempData["Success"] = "Đăng ký thành công! Vui lòng đăng nhập.";
+            return RedirectToAction("Login");
         }
 
         // ĐĂNG NHẬP
@@ -104,6 +104,54 @@ namespace MyStore.Controllers
             Session.Remove("CustomerName");
             FormsAuthentication.SignOut();
             return RedirectToAction("Index", "Home");
+        }
+        // HỒ SƠ KHÁCH HÀNG
+        [HttpGet]
+        public ActionResult Edit()
+        {
+            if (!User.Identity.IsAuthenticated)
+                return RedirectToAction("Login");
+
+            var customer = db.Customers.FirstOrDefault(c => c.Username == User.Identity.Name);
+            if (customer == null)
+                return RedirectToAction("Login");
+
+            var model = new ProfileVM
+            {
+                Username = customer.Username,
+                CustomerName = customer.CustomerName,
+                CustomerPhone = customer.CustomerPhone,
+                CustomerEmail = customer.CustomerEmail,
+                CustomerAddress = customer.CustomerAddress
+            };
+            return View(model);
+        }
+
+        [HttpPost]
+        public ActionResult Edit(ProfileVM model)
+        {
+            if (!User.Identity.IsAuthenticated)
+                return RedirectToAction("Login");
+
+            var customer = db.Customers.FirstOrDefault(c => c.Username == User.Identity.Name);
+            if (customer == null)
+                return RedirectToAction("Login");
+
+            model.Username = customer.Username;
+            if (!ModelState.IsValid)
+                return View(model);
+
+            customer.CustomerName = model.CustomerName;
+            customer.CustomerPhone = model.CustomerPhone;
+            customer.CustomerEmail = model.CustomerEmail;
+            customer.CustomerAddress = model.CustomerAddress;
+            db.SaveChanges();
+
+            // Cập nhật tên hiển thị trên menu
+            Session["CustomerName"] = customer.CustomerName;
+
+            TempData["Success"] = "Cập nhật thông tin thành công!";
+            return RedirectToAction("Edit");
         }
     }
 }

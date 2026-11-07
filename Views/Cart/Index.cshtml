@@ -6,6 +6,10 @@
 <link rel="stylesheet" type="text/css" href="~/Content/myStyle/CustomerCart.css" />
 
 <h2 class="cart-title">GIỎ HÀNG</h2>
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger mx-4">@TempData["Error"]</div>
+}
 
 @if (!Model.Items.Any())
 {

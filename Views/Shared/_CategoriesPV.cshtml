@@ -1,0 +1,11 @@
+﻿@model IEnumerable<MyStore.Models.EDM.Category>
+
+<li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Danh mục</a>
+    <ul class="dropdown-menu">
+        @foreach (var cat in Model)
+        {
+            <li>@Html.ActionLink(cat.CategoryName, "ProductList", "Home", new { id = cat.CategoryID, area = "" }, new { @class = "dropdown-item" })</li>
+        }
+    </ul>
+</li>

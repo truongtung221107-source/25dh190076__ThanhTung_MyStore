@@ -2,6 +2,7 @@
 using System.Web.Mvc;
 using MyStore.Models.EDM;
 using MyStore.Models.ViewModel;
+using System.Linq;
 
 namespace MyStore.Controllers
 {
@@ -30,7 +31,18 @@ namespace MyStore.Controllers
             if (product == null)
                 return HttpNotFound();
 
+            if (quantity < 1) quantity = 1;
+
             var cart = GetCartService().GetCart();
+
+            // Kiểm tra tổng số lượng (đã có trong giỏ + muốn thêm) không vượt tồn kho
+            int inCart = cart.Items.Where(i => i.ProductID == id).Sum(i => i.Quantity);
+            if (inCart + quantity > product.Quantity)
+            {
+                TempData["Error"] = "Sản phẩm \"" + product.ProductName + "\" chỉ còn " + product.Quantity + " trong kho.";
+                return RedirectToAction("Index");
+            }
+
             cart.AddItem(
                 product.ProductID,
                 product.ProductImage,
@@ -62,6 +74,14 @@ namespace MyStore.Controllers
         public ActionResult UpdateQuantity(int id, int quantity)
         {
             if (quantity < 1) quantity = 1;
+
+            var product = db.Products.Find(id);
+            if (product != null && quantity > product.Quantity)
+            {
+                quantity = System.Math.Max(product.Quantity, 1);
+                TempData["Error"] = "Sản phẩm \"" + product.ProductName + "\" chỉ còn " + product.Quantity + " trong kho.";
+            }
+
             GetCartService().GetCart().UpdateQuantity(id, quantity);
             return RedirectToAction("Index");
         }
