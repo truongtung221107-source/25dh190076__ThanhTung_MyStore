@@ -122,6 +122,14 @@ namespace MyStore.Areas.Admin.Controllers
         public ActionResult DeleteConfirmed(string id)
         {
             User user = db.Users.Find(id);
+
+            // Không cho xóa nếu tài khoản đã có hồ sơ khách hàng
+            if (db.Customers.Any(c => c.Username == id))
+            {
+                ViewBag.Error = "Không thể xóa tài khoản này vì đã có hồ sơ khách hàng liên kết.";
+                return View("Delete", user);
+            }
+
             db.Users.Remove(user);
             db.SaveChanges();
             return RedirectToAction("Index");

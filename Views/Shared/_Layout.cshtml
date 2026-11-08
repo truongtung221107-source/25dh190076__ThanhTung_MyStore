@@ -33,7 +33,7 @@
                     @if (customerName != null)
                     {
                        <li class="nav-item dropdown">
-                           <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Xin chào, @customerName</a>
+                           <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">👤 Xin chào, @customerName</a>
                            <ul class="dropdown-menu dropdown-menu-end">
                                <li>@Html.ActionLink("Hồ sơ khách hàng", "Edit", "Account", new { area = "" }, new { @class = "dropdown-item" })</li>
                                <li>@Html.ActionLink("Lịch sử giao dịch", "MyOrder", "Order", new { area = "" }, new { @class = "dropdown-item" })</li>
@@ -46,7 +46,7 @@
                         <li>@Html.ActionLink("Đăng nhập", "Login", "Account", new { area = "" }, new { @class = "nav-link" })</li>
                         <li>@Html.ActionLink("Đăng ký", "Register", "Account", new { area = "" }, new { @class = "nav-link" })</li>
                     }
-                    <li>@Html.ActionLink("Giỏ hàng (" + cartCount + ")", "Index", "Cart", new { area = "" }, new { @class = "nav-link" })</li>
+                <li>@Html.ActionLink("🛒 Giỏ hàng (" + cartCount + ")", "Index", "Cart", new { area = "" }, new { @class = "nav-link" })</li>
                 </ul>
             </div>
         </div>
