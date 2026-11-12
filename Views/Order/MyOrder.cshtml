@@ -6,6 +6,14 @@
 }
 
 <h2>ĐƠN HÀNG CỦA TÔI</h2>
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
 
 <!-- TÌM KIẾM -->
 @using (Html.BeginForm("MyOrder", "Order", FormMethod.Get))
@@ -39,24 +47,34 @@ else
 {
     foreach (var order in Model)
     {
-        <div class="card mb-3">
-            <div class="card-header d-flex justify-content-between">
-                <span>Mã đơn: <strong>@order.OrderID</strong> - @order.OrderDate.ToString("dd/MM/yyyy")</span>
-                <span class="text-danger">@order.PaymentStatus</span>
+<div class="card mb-3">
+    <div class="card-header d-flex justify-content-between">
+        <span>Mã đơn: <strong>@order.OrderID</strong> - @order.OrderDate.ToString("dd/MM/yyyy")</span>
+        <span class="text-danger">@order.PaymentStatus</span>
+    </div>
+    <div class="card-body">
+        @foreach (var d in order.OrderDetails)
+        {
+            <div class="d-flex justify-content-between">
+                <span>@d.Product.ProductName x @d.Quantity</span>
+                <span>@d.UnitPrice.ToString("N0") đ</span>
             </div>
-            <div class="card-body">
-                @foreach (var d in order.OrderDetails)
+        }
+    </div>
+    <div class="card-footer d-flex justify-content-between align-items-center">
+        <span>Tổng tiền: <strong>@order.TotalAmount.ToString("N0") đ</strong></span>
+        <div class="d-flex gap-2">
+            @Html.ActionLink("Xem chi tiết", "OrderDetail", "Order", new { id = order.OrderID }, new { @class = "btn btn-outline-primary btn-sm" })
+
+            @if (order.PaymentStatus == "Chờ thanh toán")
+            {
+                using (Html.BeginForm("CancelOrder", "Order", new { id = order.OrderID }, FormMethod.Post, new { onsubmit = "return confirm('Bạn chắc chắn muốn hủy đơn hàng này?');" }))
                 {
-                    <div class="d-flex justify-content-between">
-                        <span>@d.Product.ProductName x @d.Quantity</span>
-                        <span>@d.UnitPrice.ToString("N0") đ</span>
-                    </div>
+                    <button type="submit" class="btn btn-outline-danger btn-sm">Hủy đơn</button>
                 }
-            </div>
-            <div class="card-footer d-flex justify-content-between align-items-center">
-                <span>Tổng tiền: <strong>@order.TotalAmount.ToString("N0") đ</strong></span>
-                @Html.ActionLink("Xem chi tiết", "OrderDetail", "Order", new { id = order.OrderID }, new { @class = "btn btn-outline-primary btn-sm" })
-            </div>
+            }
         </div>
+    </div>
+</div>
     }
 }

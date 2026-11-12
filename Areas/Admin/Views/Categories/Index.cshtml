@@ -27,4 +27,13 @@
 
 <p>
     @Html.ActionLink("Thêm mới", "Create", null, new { @class = "btn btn-primary" })
+    <div class="row mb-3 mt-3">
+        <div class="col-md-6">
+            @using (Html.BeginForm("Index", "Categories", FormMethod.Get, new { @class = "d-flex" }))
+            {
+                <input type="text" name="searchTerm" class="form-control me-2" placeholder="Nhập tên danh mục cần tìm..." value="@Request.QueryString["searchTerm"]" />
+                <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+            }
+        </div>
+    </div>
 </p>

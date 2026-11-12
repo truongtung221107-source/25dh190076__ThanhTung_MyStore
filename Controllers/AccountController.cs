@@ -102,6 +102,7 @@ namespace MyStore.Controllers
             Session.Remove("CustomerUsername");
             Session.Remove("CustomerID");
             Session.Remove("CustomerName");
+            Session.Remove("Cart");
             FormsAuthentication.SignOut();
             return RedirectToAction("Index", "Home");
         }

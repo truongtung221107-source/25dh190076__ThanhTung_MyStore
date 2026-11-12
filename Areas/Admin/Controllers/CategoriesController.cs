@@ -16,9 +16,20 @@ namespace MyStore.Areas.Admin.Controllers
         private MyStoreEntities db = new MyStoreEntities();
 
         // GET: Admin/Categories
-        public ActionResult Index()
+        // GET: Admin/Categories
+        public ActionResult Index(string searchTerm)
         {
-            return View(db.Categories.ToList());
+            // Lấy toàn bộ danh mục
+            var categories = db.Categories.AsQueryable();
+
+            // Nếu người dùng có nhập từ khóa, lọc ra những danh mục chứa từ khóa đó
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                categories = categories.Where(c => c.CategoryName.Contains(searchTerm));
+            }
+
+            // Trả dữ liệu về View
+            return View(categories.ToList());
         }
 
         // GET: Admin/Categories/Details/5
@@ -51,6 +62,13 @@ namespace MyStore.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
+                var checkName = db.Categories.FirstOrDefault(c => c.CategoryName.ToLower() == category.CategoryName.ToLower());
+                if (checkName != null)
+                {
+                    // Báo lỗi về View
+                    ModelState.AddModelError("CategoryName", "Tên danh mục này đã tồn tại, vui lòng nhập tên khác!");
+                    return View(category);
+                }
                 db.Categories.Add(category);
                 db.SaveChanges();
                 return RedirectToAction("Index");

@@ -103,6 +103,14 @@ namespace MyStore.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
+                var checkName = db.Products.FirstOrDefault(p => p.ProductName.Trim().ToLower() == product.ProductName.Trim().ToLower());
+                if (checkName != null)
+                {
+                    ModelState.AddModelError("ProductName", "Tên sản phẩm này đã tồn tại, vui lòng nhập tên khác!");
+                    // Bắt buộc phải load lại ViewBag ở đây để cái menu thả xuống chọn Danh mục không bị lỗi sập web
+                    ViewBag.CategoryID = new SelectList(db.Categories, "CategoryID", "CategoryName", product.CategoryID);
+                    return View(product);
+                }
                 if (product.UploadImg != null)
                 {
                     string filename = Path.GetFileName(product.UploadImg.FileName);

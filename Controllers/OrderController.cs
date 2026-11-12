@@ -57,9 +57,21 @@ namespace MyStore.Controllers
             if (!cart.Items.Any())
                 return RedirectToAction("Index", "Home");
 
+            // Lấy các sản phẩm trong giỏ để kiểm tra và trừ tồn kho
+            var productIds = cart.Items.Select(i => i.ProductID).ToList();
+            var stockProducts = db.Products.Where(p => productIds.Contains(p.ProductID)).ToList();
+
+            foreach (var item in cart.Items)
+            {
+                var p = stockProducts.FirstOrDefault(x => x.ProductID == item.ProductID);
+                if (p == null || item.Quantity > p.Quantity)
+                {
+                    ModelState.AddModelError("", "Sản phẩm \"" + item.ProductName + "\" không đủ số lượng trong kho.");
+                }
+            }
+
             if (!ModelState.IsValid)
             {
-                // Nạp lại dữ liệu hiển thị rồi trả về form
                 model.CustomerName = customer.CustomerName;
                 model.CustomerPhone = customer.CustomerPhone;
                 model.Items = cart.Items.ToList();
@@ -79,9 +91,12 @@ namespace MyStore.Controllers
                 PaymentMethod = model.PaymentMethod
             };
 
-            // Thêm chi tiết đơn hàng từ giỏ
             foreach (var item in cart.Items)
             {
+                // Trừ số lượng tồn
+                var prod = stockProducts.First(x => x.ProductID == item.ProductID);
+                prod.Quantity -= item.Quantity;
+
                 order.OrderDetails.Add(new OrderDetail
                 {
                     ProductID = item.ProductID,
@@ -174,6 +189,43 @@ namespace MyStore.Controllers
                 .ToList();
 
             return View(list);
+        }
+        // HỦY ĐƠN HÀNG
+        [HttpPost]
+        public ActionResult CancelOrder(int id)
+        {
+            var customer = GetCustomer();
+            if (customer == null)
+                return RedirectToAction("Login", "Account");
+
+            // Chỉ hủy được đơn của chính khách hàng đang đăng nhập
+            var order = db.Orders
+                .Include("OrderDetails")
+                .FirstOrDefault(o => o.OrderID == id && o.CustomerID == customer.CustomerID);
+
+            if (order == null)
+                return HttpNotFound();
+
+            // Chỉ hủy được đơn đang chờ thanh toán
+            if (order.PaymentStatus != "Chờ thanh toán")
+            {
+                TempData["Error"] = "Chỉ hủy được đơn hàng đang ở trạng thái \"Chờ thanh toán\".";
+                return RedirectToAction("MyOrder");
+            }
+
+            // Cộng lại số lượng tồn cho từng sản phẩm trong đơn
+            foreach (var d in order.OrderDetails)
+            {
+                var product = db.Products.Find(d.ProductID);
+                if (product != null)
+                    product.Quantity += d.Quantity;
+            }
+
+            order.PaymentStatus = "Đã hủy";
+            db.SaveChanges();
+
+            TempData["Success"] = "Đã hủy đơn hàng số " + id + " và hoàn lại số lượng tồn kho.";
+            return RedirectToAction("MyOrder");
         }
     }
 }
