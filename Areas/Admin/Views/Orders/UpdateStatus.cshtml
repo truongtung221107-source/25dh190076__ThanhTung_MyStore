@@ -1,0 +1,35 @@
+﻿@model MyStore.Models.EDM.Order
+
+@{
+    ViewBag.Title = "Cập nhật trạng thái đơn hàng";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>CẬP NHẬT TRẠNG THÁI ĐƠN HÀNG #@Model.OrderID</h2>
+<hr />
+
+@using (Html.BeginForm("UpdateStatus", "Orders", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    @Html.Hidden("id", Model.OrderID)
+
+    <div class="mb-3">
+        <label class="form-label fw-bold">Khách hàng:</label>
+        <span>@Model.Customer.CustomerName</span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label fw-bold">Tổng tiền:</label>
+        <span>@String.Format("{0:N0} đ", Model.TotalAmount)</span>
+    </div>
+
+    <div class="mb-3" style="max-width: 350px;">
+        <label class="form-label fw-bold">Trạng thái đơn hàng:</label>
+        @Html.DropDownList("PaymentStatus", (SelectList)ViewBag.StatusList, new { @class = "form-select" })
+    </div>
+
+    <div class="mt-3">
+        <button type="submit" class="btn btn-primary">Lưu trạng thái</button>
+        @Html.ActionLink("Quay lại chi tiết", "Details", new { id = Model.OrderID }, new { @class = "btn btn-secondary" })
+    </div>
+}

@@ -2,7 +2,9 @@
 @{
     ViewBag.Title = "Đơn hàng của tôi";
     string current = ViewBag.Status as string ?? "";
+    bool showAll = ViewBag.ShowAll != null && (bool)ViewBag.ShowAll;
     string[] tabs = { "", "Chờ thanh toán", "Đang xử lý", "Đang vận chuyển", "Đã giao", "Đã hủy" };
+    string[] statusGroups = { "Chờ thanh toán", "Đang xử lý", "Đang vận chuyển", "Đã giao", "Đã hủy" };
 }
 
 <h2>ĐƠN HÀNG CỦA TÔI</h2>
@@ -15,7 +17,6 @@
     <div class="alert alert-danger">@TempData["Error"]</div>
 }
 
-<!-- TÌM KIẾM -->
 @using (Html.BeginForm("MyOrder", "Order", FormMethod.Get))
 {
     <input type="hidden" name="status" value="@current" />
@@ -26,7 +27,6 @@
     </div>
 }
 
-<!-- CÁC TAB TRẠNG THÁI -->
 <ul class="nav nav-tabs mb-3">
     @foreach (var t in tabs)
     {
@@ -38,43 +38,119 @@
     }
 </ul>
 
-<!-- DANH SÁCH ĐƠN HÀNG -->
 @if (!Model.Any())
 {
-    <p class="text-muted">Không có đơn hàng nào.</p>
+    <div class="alert alert-info">
+        BẠN CHƯA CÓ ĐƠN HÀNG NÀO.
+        @Html.ActionLink("HÃY ĐẶT ĐƠN NGAY.", "Index", "Home", null, new { @class = "fw-bold text-decoration-underline" })
+    </div>
+}
+else if (current == "")
+{
+    foreach (var st in statusGroups)
+    {
+        var groupOrders = Model.Where(o => o.PaymentStatus == st).ToList();
+        if (groupOrders.Any())
+        {
+            var displayOrders = groupOrders.Take(2).ToList();
+            <h5 class="mt-3 text-primary">@st</h5>
+            foreach (var order in displayOrders)
+            {
+                <div class="card mb-3">
+                    <div class="card-header d-flex justify-content-between">
+                        <span>Mã đơn: <strong>@order.OrderID</strong> - @order.OrderDate.ToString("dd/MM/yyyy")</span>
+                        <span class="text-danger">@order.PaymentStatus</span>
+                    </div>
+                    <div class="card-body">
+                        @foreach (var d in order.OrderDetails)
+                        {
+                            <div class="d-flex justify-content-between mb-1">
+                                <a href="@Url.Action("ProductDetails", "Home", new { id = d.ProductID })" class="text-decoration-none">
+                                    @d.Product.ProductName x @d.Quantity
+                                </a>
+                                <span>@d.UnitPrice.ToString("N0") đ</span>
+                            </div>
+                        }
+                    </div>
+                    <div class="card-footer d-flex justify-content-between align-items-center">
+                        <span>Tổng tiền: <strong>@order.TotalAmount.ToString("N0") đ</strong></span>
+                        <div class="d-flex gap-2">
+                            @using (Html.BeginForm("BuyAgain", "Order", new { id = order.OrderID }, FormMethod.Post))
+                            {
+                                <button type="submit" class="btn btn-primary btn-sm">Mua lại</button>
+                            }
+                            @Html.ActionLink("Xem chi tiết", "OrderDetail", "Order", new { id = order.OrderID }, new { @class = "btn btn-outline-primary btn-sm" })
+                            @if (order.PaymentStatus == "Chờ thanh toán")
+                            {
+                                using (Html.BeginForm("CancelOrder", "Order", new { id = order.OrderID }, FormMethod.Post, new { onsubmit = "return confirm('Bạn chắc chắn muốn hủy đơn hàng này?');" }))
+                                {
+                                    <button type="submit" class="btn btn-outline-danger btn-sm">Hủy đơn</button>
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+            if (groupOrders.Count > 2)
+            {
+                <div class="mb-3">
+                    <a href="@Url.Action("MyOrder", "Order", new { status = st, searchTerm = ViewBag.SearchTerm, showAll = true })" class="btn btn-link p-0">
+                        Xem thêm (@groupOrders.Count đơn)
+                    </a>
+                </div>
+            }
+        }
+    }
 }
 else
 {
-    foreach (var order in Model)
-    {
-<div class="card mb-3">
-    <div class="card-header d-flex justify-content-between">
-        <span>Mã đơn: <strong>@order.OrderID</strong> - @order.OrderDate.ToString("dd/MM/yyyy")</span>
-        <span class="text-danger">@order.PaymentStatus</span>
-    </div>
-    <div class="card-body">
-        @foreach (var d in order.OrderDetails)
-        {
-            <div class="d-flex justify-content-between">
-                <span>@d.Product.ProductName x @d.Quantity</span>
-                <span>@d.UnitPrice.ToString("N0") đ</span>
-            </div>
-        }
-    </div>
-    <div class="card-footer d-flex justify-content-between align-items-center">
-        <span>Tổng tiền: <strong>@order.TotalAmount.ToString("N0") đ</strong></span>
-        <div class="d-flex gap-2">
-            @Html.ActionLink("Xem chi tiết", "OrderDetail", "Order", new { id = order.OrderID }, new { @class = "btn btn-outline-primary btn-sm" })
+    var allFiltered = Model.ToList();
+    var displayOrders = showAll ? allFiltered.Take(50).ToList() : allFiltered.Take(2).ToList();
 
-            @if (order.PaymentStatus == "Chờ thanh toán")
-            {
-                using (Html.BeginForm("CancelOrder", "Order", new { id = order.OrderID }, FormMethod.Post, new { onsubmit = "return confirm('Bạn chắc chắn muốn hủy đơn hàng này?');" }))
+    foreach (var order in displayOrders)
+    {
+        <div class="card mb-3">
+            <div class="card-header d-flex justify-content-between">
+                <span>Mã đơn: <strong>@order.OrderID</strong> - @order.OrderDate.ToString("dd/MM/yyyy")</span>
+                <span class="text-danger">@order.PaymentStatus</span>
+            </div>
+            <div class="card-body">
+                @foreach (var d in order.OrderDetails)
                 {
-                    <button type="submit" class="btn btn-outline-danger btn-sm">Hủy đơn</button>
+                    <div class="d-flex justify-content-between mb-1">
+                        <a href="@Url.Action("ProductDetails", "Home", new { id = d.ProductID })" class="text-decoration-none">
+                            @d.Product.ProductName x @d.Quantity
+                        </a>
+                        <span>@d.UnitPrice.ToString("N0") đ</span>
+                    </div>
                 }
-            }
+            </div>
+            <div class="card-footer d-flex justify-content-between align-items-center">
+                <span>Tổng tiền: <strong>@order.TotalAmount.ToString("N0") đ</strong></span>
+                <div class="d-flex gap-2">
+                    @using (Html.BeginForm("BuyAgain", "Order", new { id = order.OrderID }, FormMethod.Post))
+                    {
+                        <button type="submit" class="btn btn-primary btn-sm">Mua lại</button>
+                    }
+                    @Html.ActionLink("Xem chi tiết", "OrderDetail", "Order", new { id = order.OrderID }, new { @class = "btn btn-outline-primary btn-sm" })
+                    @if (order.PaymentStatus == "Chờ thanh toán")
+                    {
+                        using (Html.BeginForm("CancelOrder", "Order", new { id = order.OrderID }, FormMethod.Post, new { onsubmit = "return confirm('Bạn chắc chắn muốn hủy đơn hàng này?');" }))
+                        {
+                            <button type="submit" class="btn btn-outline-danger btn-sm">Hủy đơn</button>
+                        }
+                    }
+                </div>
+            </div>
         </div>
-    </div>
-</div>
+    }
+
+    if (!showAll && allFiltered.Count > 2)
+    {
+        <div class="mb-3">
+            <a href="@Url.Action("MyOrder", "Order", new { status = current, searchTerm = ViewBag.SearchTerm, showAll = true })" class="btn btn-link p-0">
+                Xem thêm (@allFiltered.Count đơn)
+            </a>
+        </div>
     }
 }

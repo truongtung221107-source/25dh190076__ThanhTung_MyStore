@@ -1,9 +1,11 @@
-﻿using System.Data.Entity;
+﻿using MyStore.Models.EDM;
+using PagedList;
+using System;
+using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
-using MyStore.Models.EDM;
-using PagedList;
 
 namespace MyStore.Areas.Admin.Controllers
 {
@@ -13,22 +15,39 @@ namespace MyStore.Areas.Admin.Controllers
         private MyStoreEntities db = new MyStoreEntities();
 
         // GET: Admin/Orders
-        public ActionResult Index(string searchString, int? page)
+        public ActionResult Index(string searchTerm, string paymentStatus, DateTime? orderDate, int? page)
         {
-            var orders = db.Orders.Include(o => o.Customer);
+            var orders = db.Orders.Include(o => o.Customer).AsQueryable();
 
-            // Tìm theo mã đơn hàng hoặc tên khách hàng
-            if (!string.IsNullOrEmpty(searchString))
+            if (!string.IsNullOrEmpty(searchTerm))
             {
-                int orderId;
-                bool isId = int.TryParse(searchString, out orderId);
-                orders = orders.Where(o => (isId && o.OrderID == orderId)
-                                        || o.Customer.CustomerName.Contains(searchString));
+                string keyword = searchTerm.Trim();
+                orders = orders.Where(o => o.OrderID.ToString().Contains(keyword)
+                                        || o.Customer.CustomerName.Contains(keyword));
             }
 
-            ViewBag.SearchString = searchString;
+            if (!string.IsNullOrEmpty(paymentStatus))
+            {
+                orders = orders.Where(o => o.PaymentStatus == paymentStatus);
+            }
 
-            return View(orders.OrderByDescending(o => o.OrderID).ToPagedList(page ?? 1, 5));
+            if (orderDate.HasValue)
+            {
+                DateTime selectedDate = orderDate.Value.Date;
+                orders = orders.Where(o => DbFunctions.TruncateTime(o.OrderDate) == selectedDate);
+            }
+
+            var statuses = new List<string> { "Chờ thanh toán", "Đang xử lý", "Đang vận chuyển", "Đã giao", "Đã hủy" };
+            ViewBag.PaymentStatusList = new SelectList(statuses, paymentStatus);
+            ViewBag.SearchTerm = searchTerm;
+            ViewBag.PaymentStatus = paymentStatus;
+            ViewBag.OrderDate = orderDate.HasValue ? orderDate.Value.ToString("yyyy-MM-dd") : "";
+
+            orders = orders.OrderByDescending(o => o.OrderDate).ThenByDescending(o => o.OrderID);
+
+            int pageSize = 15;
+            int pageNumber = (page ?? 1);
+            return View(orders.ToPagedList(pageNumber, pageSize));
         }
 
         // GET: Admin/Orders/Details/5
@@ -58,6 +77,41 @@ namespace MyStore.Areas.Admin.Controllers
                 db.Dispose();
             }
             base.Dispose(disposing);
+        }
+        // GET: Admin/Orders/UpdateStatus/5
+        public ActionResult UpdateStatus(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(System.Net.HttpStatusCode.BadRequest);
+            }
+            var order = db.Orders.Find(id);
+            if (order == null)
+            {
+                return HttpNotFound();
+            }
+
+            var statuses = new List<string> { "Chờ thanh toán", "Đang xử lý", "Đang vận chuyển", "Đã giao", "Đã hủy" };
+            ViewBag.StatusList = new SelectList(statuses, order.PaymentStatus);
+
+            return View(order);
+        }
+
+        // POST: Admin/Orders/UpdateStatus/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult UpdateStatus(int id, string PaymentStatus)
+        {
+            var order = db.Orders.Find(id);
+            if (order == null)
+            {
+                return HttpNotFound();
+            }
+
+            order.PaymentStatus = PaymentStatus;
+            db.SaveChanges();
+
+            return RedirectToAction("Details", new { id = order.OrderID });
         }
     }
 }

@@ -7,5 +7,6 @@
 @Html.Partial("_PVInvoice", Model)
 
 <p class="text-center">
+    @Html.ActionLink("Cập nhật trạng thái", "UpdateStatus", new { id = Model.OrderID }, new { @class = "btn btn-primary" }) 
     @Html.ActionLink("Quay lại danh sách", "Index", null, new { @class = "btn btn-primary" })
 </p>

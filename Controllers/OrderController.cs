@@ -155,33 +155,33 @@ namespace MyStore.Controllers
             return View(order);
         }
         // TRANG ĐƠN HÀNG CỦA TÔI
-        public ActionResult MyOrder(string status, string searchTerm)
+        public ActionResult MyOrder(string status, string searchTerm, bool showAll = false)
         {
             var customer = GetCustomer();
             if (customer == null)
-                return RedirectToAction("Login", "Account");
+                return RedirectToAction("Login", "Account", new { returnUrl = Request.Url.PathAndQuery });
 
             var orders = db.Orders
-                .Include("OrderDetails.Product")
+                .Include("OrderDetails.Product.Category")
                 .Where(o => o.CustomerID == customer.CustomerID);
 
-            // Lọc theo trạng thái (tab)
             if (!string.IsNullOrEmpty(status))
             {
                 orders = orders.Where(o => o.PaymentStatus == status);
             }
 
-            // Tìm theo mã đơn hàng hoặc tên sản phẩm
             if (!string.IsNullOrEmpty(searchTerm))
             {
                 int orderId;
-                bool isId = int.TryParse(searchTerm, out orderId);
+                bool isId = int.TryParse(searchTerm.Trim(), out orderId);
+                string keyword = searchTerm.Trim();
                 orders = orders.Where(o => (isId && o.OrderID == orderId)
-                                        || o.OrderDetails.Any(d => d.Product.ProductName.Contains(searchTerm)));
+                                        || o.OrderDetails.Any(d => d.Product.ProductName.Contains(keyword)));
             }
 
             ViewBag.Status = status;
             ViewBag.SearchTerm = searchTerm;
+            ViewBag.ShowAll = showAll;
 
             var list = orders
                 .OrderByDescending(o => o.OrderDate)
@@ -189,6 +189,43 @@ namespace MyStore.Controllers
                 .ToList();
 
             return View(list);
+        }
+
+        [HttpPost]
+        public ActionResult BuyAgain(int id)
+        {
+            var customer = GetCustomer();
+            if (customer == null)
+                return RedirectToAction("Login", "Account");
+
+            var order = db.Orders
+                .Include("OrderDetails.Product.Category")
+                .FirstOrDefault(o => o.OrderID == id && o.CustomerID == customer.CustomerID);
+
+            if (order == null)
+                return HttpNotFound();
+
+            var cart = new CartService(Session).GetCart();
+            bool hasOutOfStock = false;
+
+            foreach (var d in order.OrderDetails)
+            {
+                var p = d.Product;
+                if (p != null && p.Quantity > 0)
+                {
+                    string catName = p.Category != null ? p.Category.CategoryName : "";
+                    cart.AddItem(p.ProductID, p.ProductImage, p.ProductName, p.ProductPrice, 1, catName);
+                }
+                else
+                {
+                    hasOutOfStock = true;
+                }
+            }
+
+            if (hasOutOfStock)
+                TempData["Error"] = "Một số sản phẩm trong đơn đã hết hàng nên không thể thêm vào giỏ.";
+
+            return RedirectToAction("Index", "Cart");
         }
         // HỦY ĐƠN HÀNG
         [HttpPost]
