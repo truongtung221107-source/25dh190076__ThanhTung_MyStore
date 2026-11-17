@@ -9,7 +9,8 @@
 
 <table class="table bg-info col-md-12">
     <tr>
-        <th class="bg-success col-md-8">TÊN DANH MỤC</th>
+        <th class="bg-success col-md-5">TÊN DANH MỤC</th>
+        <th class="bg-success col-md-3">TỔNG SỐ HÀNG HÓA</th>
         <th class="bg-success col-md-4"></th>
     </tr>
 
@@ -17,6 +18,7 @@
     {
         <tr>
             <td>@Html.DisplayFor(modelItem => item.CategoryName)</td>
+            <td>@(item.Products != null ? item.Products.Count() : 0)</td>
             <td>
                 @Html.ActionLink("Sửa", "Edit", new { id = item.CategoryID }, new { @class = "btn btn-primary btn-sm" })
                 @Html.ActionLink("Xóa", "Delete", new { id = item.CategoryID }, new { @class = "btn btn-primary btn-sm" })
