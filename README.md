@@ -18,3 +18,5 @@
 ## Chức năng
 - Admin: danh mục, sản phẩm (upload ảnh, tìm kiếm, lọc giá, sắp xếp, phân trang), khách hàng, tài khoản Admin, thống kê
 - Khách hàng: trang chủ, chi tiết sản phẩm, giỏ hàng, đăng ký/đăng nhập, thanh toán, đơn hàng của tôi
+- - Nếu tải ZIP về chạy lần đầu báo thiếu bin\roslyn\csc.exe, vào Tools/ NuGet Package Manager/ Package Manager Console và chạy lệnh 
+- Update-Package Microsoft.CodeDom.Providers.DotNetCompilerPlatform -r ==lenh update nuget
